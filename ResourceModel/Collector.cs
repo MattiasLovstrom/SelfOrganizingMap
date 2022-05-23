@@ -41,7 +41,7 @@ namespace SOFM.Tests
             {
                 if (data.TryGetValue(key, out var value))
                 {
-                    input.Add(1000.0*(_lists[key].IndexOf((string) value) + 1.0) / (_lists[key].Count + 1));
+                    input.Add(1.0*(_lists[key].IndexOf((string) value) + 1.0) / (_lists[key].Count + 1));
                 }
                 else
                 {

@@ -1,14 +1,16 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using SelfOrganizingMap;
+using SOFM.Tests;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using SelfOrganizingMap;
 
 namespace SofUi
 {
@@ -36,150 +38,245 @@ namespace SofUi
                 _map[y] = new OutputNeuron[widthCount];
                 for (var x = 0; x < widthCount; x++)
                 {
-                    var n  = new OutputNeuron();
+                    var n = new OutputNeuron();
+                    n.Parent = this;
                     n.Bounds = new Rectangle(topx + x * widthNeuron, topy + y * heightNeuron, widthNeuron - 2, heightNeuron - 2);
                     Controls.Add(n);
+                    toolTip1.SetToolTip(n, "No match");
                     _map[y][x] = n;
                 }
             }
+
+            timer1.Interval = 1000;
+            timer1.Tick += Timer1_Tick;
+
+            // Enable timer.  
+            timer1.Enabled = true;
         }
 
-        
+        private void Timer1_Tick(object sender, EventArgs e)
+        {
+            toolStripStatusLabel1.Text = status;
+            Refresh();
+        }
+
         public int count = 0;
         private SoMap _network;
         private Label neuron;
+        int cnt = 0;
+        private string status = "start";
 
         private void TestMap()
         {
-            _network = new SoMap(
-                width: widthCount,
-                height: heightCount,
-                inputDimension: 2,
-                numberOfIterations: 1000,
-                learningRate: 0.01);
+            var stream = File.ReadAllText("c:\\temp\\10.txt");
+            //var stream = File.ReadAllText("c:\\temp\\users.txt");
+            var json = JsonConvert.DeserializeObject<RawSearchResult>(stream);
 
-            var inputVector0 = new SOFM.Vector { 0, 0 };   // 1:1
-            var inputVector1 = new SOFM.Vector { 1, 1 };   // 3:5
-            var inputVector2 = new SOFM.Vector { 2, 2 };   // 9:5
-            var inputVector3 = new SOFM.Vector { 3, 3 };   // 5:0
-            var inputVector4 = new SOFM.Vector { 4, 4 };   // 7:0
-            var inputVector5 = new SOFM.Vector { 5, 5 };   // 7:2
-            var inputVector6 = new SOFM.Vector { 6, 6 };   // 9:2
-            var testVectorA = new SOFM.Vector { 2.1, 2.1 };// 8:5
-            var testVectorB = new SOFM.Vector { 2.2, 2.2 };// 4:3
-            var testVectorC = new SOFM.Vector { 1.9, 1.9 };// 9:5
-            // 00 --
-            var input = new[]
-            {
-                inputVector0,
-                inputVector1,
-                inputVector2,
-                inputVector3,
-                inputVector4,
-                inputVector5,
-                inputVector6
-            };
+            var keys = new List<string> { "locationCountry", "locationCity", "locationAddress", "organization_title" };
 
-            _network.Iterate += (sender, eventArgs) =>
+            var collector = new Collector(keys);
+
+
+            foreach (var doclist in json.Components.Doclists)
             {
-                count++;
-                if (count % 1 == 0)
+                foreach (var document in doclist.Documents)
                 {
-                    DisplayInternal(
-                        ("0", inputVector0),
-                        ("1", inputVector1),
-                        ("2", inputVector2),
-                        ("3", inputVector3),
-                        ("4", inputVector4),
-                        ("5", inputVector5),
-                        ("6", inputVector6),
-                        ("A", testVectorA),
-                        ("B", testVectorB),
-                        ("C", testVectorC)
-                    );
-                    Refresh();
-                    Thread.Sleep(200);
-                }
-
-            };
-
-            _network.Train(input);
-            //Console.Out.WriteLine("input");
-            DisplayInternal(
-                ("0", inputVector0),
-                ("1", inputVector1),
-                ("2", inputVector2),
-                ("3", inputVector3),
-                ("4", inputVector4),
-                ("5", inputVector5),
-                ("6", inputVector6),
-                ("A", testVectorA),
-                ("B", testVectorB),
-                ("C", testVectorC)
-            );
-        }
-
-
-        public void DisplayInternal(params (string id, IVector input)[] selected)
-        {
-            var selectedNeurons = selected.Select(idInput => _network.CalculateBestMatchingNeuron(idInput.input));
-            //foreach (var valueTuple in selected)
-            //{
-            //    var bmu = _network.CalculateBestMatchingNeuron(valueTuple.input);
-            //    var dist = valueTuple.input.Distances(bmu.Weights).ToArray();
-            //    //_map[bmu.Y][bmu.X].Selected.Add(bmu);
-            //    //_map[bmu.Y][bmu.X].Id = valueTuple.id;
-            //}
-
-            for (var i = 0; i < widthCount; i++)
-            {
-                for (var j = 0; j < heightCount; j++)
-                {
-                    var neuron = _map[j][i];
-                    var sel = selectedNeurons.Where(n => n.X == i && n.Y == j);
-                    if (sel.Any())
-                    {
-                        neuron.Selected = new List<INeuron>(sel);
-                    }
-                    else
-                    {
-                        neuron.Selected = new List<INeuron>();
-                    }
-
+                    collector.Import(document);
+                    toolStripStatusLabel1.Text = $"Reading {cnt++}";
+                    if (cnt % 100 == 0) Refresh();
                 }
             }
 
-            
-        }
+            collector.SetList("locationCountry", new[]{
+                "Sweden",
+                "",
+                "",
+                "",
+                "",
+                "Norway",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "Estonia",
+                "Latvia",
+                "Lithuania"
+                });
 
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            //var g = e.Graphics;
-            //g.DrawString(count.ToString(), new Font("Arial", 8), new SolidBrush(Color.AntiqueWhite), 0, 0);
-            //var topx = 20;
-            //var topy = 20;
-            //// 800
-            //// 20 10 10 10 10 10 10 10 20
-            //// 20 760 / 7              20
-            //var widthNeuron = (Width - 40) / (widthCount);
-            //var heightNeuron = (Height - 60) / (heightCount);
+            collector.SetList("locationCity", new[]{
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "Stockholm",
+                "Göteborg",
+                "Malmö",
+                "",
+                "",
+                "",
+                "",
+                "Oslo",
+                "",
+                "",
+                "",
+                "",
+                "Tallinn",
+                "Rīga",
+                "Vilnius",
+                "",
+                "",
+                "",
+                "",
+                "",
+            });
 
-            //for (var y = 0; y < heightCount; y++)
+            collector.SetList("locationAddress", new[]
+            {
+                "",
+                "",
+                "",
+                "",
+                "",
+                "Stjärntorget 4", //Stockholm
+                "Sankt Eriksgatan 32",//Stockholm
+                "Östra Hamngatan 24",//Göteborg
+                "Östergatan 39", // malmö
+                "",
+                "Filipstad Brygge 1", //Oslo
+                "Tornimäe 2",           //Tornimäe
+                "Vienības gatve 109",  //Rīga
+                "J.Balčikonio g.3", //Vilnius
+                "",
+                "",
+                "",
+                "",
+            });
+
+            collector.SetList("organization_title", new[]
+            {
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "Group Staff, Control & Support",
+                "Corporate and Private Customer",
+                "Large Corporates and Financial",
+                "Investment Management",
+                "Technology",
+                "",
+                "",
+                "",
+                "SEB Baltic",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+            });
+
+
+            int mapWidth = 10;
+            int mapHeight = 10;
+            var numberOfIterations = 10000;
+            var LearningRate = 0.001;
+            var map = new SoMap(
+                width: widthCount,
+                height: heightCount,
+                inputDimension: keys.Count,
+                numberOfIterations: numberOfIterations,
+                learningRate: LearningRate);
+
+            cnt = 0;
+            //map.Iterate += Map_Iterate1;
+            var vectors = collector.Documents.Select(doc => collector.ToNormalizedData(doc)).ToArray();
+
+            map.Train(vectors);
+            //var iteration = 0;
+            //var learningRate = LearningRate;
+            //var t = (iteration, learningRate);
+            //while (t.iteration < numberOfIterations)
             //{
-            //    for (var x = 0; x < widthCount; x++)
+            //    t = map.TrainOne(vectors, t);
+            //    if (cnt % 100 == 0)
             //    {
-            //        g.FillRectangle(new SolidBrush(_map[y][x].GetColor()), topx + x * widthNeuron, topy + y * heightNeuron, widthNeuron - 2, heightNeuron - 2);
-            //        g.DrawString(_map[y][x].Id, new Font("Arial", 8), new SolidBrush(Color.Black), topx + x * widthNeuron, topy + y * heightNeuron);
+            //        toolStripStatusLabel1.Text = $"Train {cnt++}";
+            //        Refresh();
             //    }
             //}
 
-            base.OnPaint(e);
+
+            cnt = 0;
+            foreach (var doc in collector.Documents)
+            {
+                var currentNeuron = map.CalculateBestMatchingNeuron(collector.ToNormalizedData(doc));
+                _map[currentNeuron.Y][currentNeuron.X].BestMatchingDocs.Add(doc);
+                _map[currentNeuron.Y][currentNeuron.X].BestMatchingNeurons.Add(currentNeuron);
+                _map[currentNeuron.Y][currentNeuron.X].BestMatchingVector.Add(collector.ToNormalizedData(doc));
+                _map[currentNeuron.Y][currentNeuron.X].UpdateColors();
+                toolTip1.SetToolTip(_map[currentNeuron.Y][currentNeuron.X], _map[currentNeuron.Y][currentNeuron.X].ToolTip());
+                cnt++;
+                toolStripStatusLabel1.Text = $"Test {cnt}";
+                Refresh();
+            }
+            Refresh();
         }
+
+        private void Map_Iterate1(object sender, EventArgs e)
+        {
+            cnt++;
+            if (cnt % 100 != 0) return;
+
+            status = $"Train {cnt}";
+            Refresh();
+        }
+
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            Refresh();
-            
+            //Refresh();
         }
 
         private void Form1_Shown(object sender, EventArgs e)
@@ -195,31 +292,67 @@ namespace SofUi
             Visible = true;
 
             Text = "";
-            ForeColor =Color.LightGreen;
+            ForeColor = Color.LightGreen;
+            BackColor = Color.Wheat;
         }
 
         public List<INeuron> Selected { get; set; }
         public string Id { get; set; }
+        public List<INeuron> BestMatchingNeurons { get; set; } = new List<INeuron>();
+        public List<IVector> BestMatchingVector { get; set; } = new List<IVector>();
+        public List<RawDocument> BestMatchingDocs { get; set; } = new List<RawDocument>();
 
-        protected override void OnPaint(PaintEventArgs e)
+        internal void UpdateColors()
         {
-            
-            if (Selected.Count() == 1)
+            BackColor = Color.White;
+            ForeColor = Color.Azure;
+            if (BestMatchingVector.Any())
             {
-                BackColor = Color.LightGreen;
-                Text = Selected.First().ToString();
+                var c = BestMatchingVector.Last().Select(v => (int)(v * 256)).ToArray();
+                BackColor = Color.FromArgb(c[0], c[1], c[2], c[3]);
+                ForeColor = c[1] + c[2] + c[3] > 500 ? Color.Black : Color.Azure;
+                System.Diagnostics.Trace.TraceInformation("BMU" + BestMatchingNeurons.Last().X + BestMatchingNeurons.Last().Y);
             }
-            else if (Selected.Count() > 1)
+
+
+            Text = BestMatchingNeurons.Count.ToString();
+        }
+
+        public string ToolTip()
+        {
+            var lines = new Dictionary<string, int>();
+            foreach (var doc in BestMatchingDocs)
             {
-                BackColor = Color.Green;
-                Text = string.Join(',', Selected.Select(x => x.ToString()).ToArray());
+                var line =
+                    GetValue(doc, "locationCountry") + ", " +
+                    GetValue(doc, "locationCity") + ", " +
+                    GetValue(doc, "locationAddress") + ", " +
+                    GetValue(doc, "organization_title");
+
+                if (lines.ContainsKey(line))
+                {
+                    lines[line]++;
+                }
+                else
+                {
+                    lines.Add(line, 1);
+                }
             }
-            else
+
+            var toolTip = new StringBuilder();
+            foreach (var line in lines.OrderByDescending(x => x.Value))
             {
-                BackColor = Color.White;
-                Text = "";
+                toolTip.AppendLine(line.Value + " : " + line.Key);
             }
-            base.OnPaint(e);
+
+            return toolTip.ToString();
+        }
+
+        private string GetValue(RawDocument doc, string key)
+        {
+            if (doc.TryGetValue(key, out var value)) return value as string;
+
+            return "-";
         }
     }
 }

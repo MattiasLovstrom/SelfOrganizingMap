@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>.NETCoreApp,Version=v5.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
@@ -14,13 +14,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ResourceModel\ResourceModel.csproj" />
     <ProjectReference Include="..\SOFM\SelfOrganizingMap.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="10.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="users.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -30,8 +30,8 @@ namespace SOFM.Tests
         [TestMethod]
         public void TestUsers()
         {
-            var stream = File.ReadAllText("10.txt");
-            //var stream = File.ReadAllText("users.txt");
+            var stream = File.ReadAllText("c:\\temp\\10.txt");
+            //var stream = File.ReadAllText("c:\\temp\\users.txt");
             var json = JsonConvert.DeserializeObject<RawSearchResult>(stream);
 
             var keys = new List<string> { "locationCountry", "locationCity", "locationAddress", "organization_title" };
@@ -454,47 +454,6 @@ namespace SOFM.Tests
             Console.Out.WriteLine(testObject.CalculateBestMatchingNeuron(inputVector4));
             Console.Out.WriteLine(testObject.CalculateBestMatchingNeuron(inputVector5));
             Console.Out.WriteLine(testObject.CalculateBestMatchingNeuron(inputVector6));
-        }
-    }
-
-    public class RawSearchResult
-    {
-        public int NumberOfHits { get; set; }
-
-        public RawSearchComponents Components { get; set; }
-    }
-
-    public class RawSearchComponents
-    {
-        public RawSearchDocList[] Doclists { get; set; }
-
-        public RawKeyMatch[] KeyMatches { get; set; }
-
-        //public SpellSuggestion SpellSuggestion { get; set; }
-
-        //public SearchFacets Facets { get; set; }
-    }
-
-    public class RawSearchDocList
-    {
-        public RawDocument[] Documents { get; set; }
-    }
-
-    public class RawKeyMatch : RawDocument
-    {
-    }
-
-    public class RawDocument : Dictionary<string, object>
-    {
-        public Type Type { get; }
-
-        public IEnumerable<string> Get(string key)
-        {
-            if (!ContainsKey(key)) return new string[0];
-
-            var o = this[key] as string;
-
-            return new List<string> { o };
         }
     }
 }
