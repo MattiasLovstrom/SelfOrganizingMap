@@ -37,35 +37,39 @@ namespace SelfOrganizingMap
 
             while (iteration < NumberOfIterations)
             {
-                Iterate?.Invoke(this, EventArgs.Empty);
-                var currentRadius = CalculateNeighborhoodRadius(iteration);
+                iteration = TrainIteration(input, iteration, ref learningRate);
+            }
+        }
 
-                foreach (var currentInput in input)
+        public int TrainIteration(SOFM.Vector[] input, int iteration, ref double learningRate)
+        {
+            Iterate?.Invoke(this, EventArgs.Empty);
+            var currentRadius = CalculateNeighborhoodRadius(iteration);
+
+            foreach (var currentInput in input)
+            {
+                var bmu = CalculateBestMatchingNeuron(currentInput);
+                //Console.Out.WriteLine($"{currentInput} => {bmu}");
+                var (xStart, xEnd, yStart, yEnd) = GetRadiusIndexes(bmu, currentRadius);
+
+                for (var x = xStart; x < xEnd; x++)
                 {
-                    var bmu = CalculateBestMatchingNeuron(currentInput);
-                    //Console.Out.WriteLine($"{currentInput} => {bmu}");
-                    var (xStart, xEnd, yStart, yEnd) = GetRadiusIndexes(bmu, currentRadius);
-
-                    for (var x = xStart; x < xEnd; x++)
+                    for (var y = yStart; y < yEnd; y++)
                     {
-                        for (var y = yStart; y < yEnd; y++)
+                        var processingNeuron = GetNeuron(x, y);
+                        var distance = bmu.Distance(processingNeuron);
+                        if (distance <= Math.Pow(currentRadius, 2.0))
                         {
-                            var processingNeuron = GetNeuron(x, y);
-                            var distance = bmu.Distance(processingNeuron);
-                            if (distance <= Math.Pow(currentRadius, 2.0))
-                            {
-                                var distanceDrop = GetDistanceDrop(distance, currentRadius);
-                                //Console.Out.Write($"  Updating {processingNeuron} {processingNeuron.Weights} =>");
-                                processingNeuron.UpdateWeights(currentInput, learningRate, distanceDrop);
-                                //Console.Out.WriteLine($" {processingNeuron.Weights}");
-
-                            }
+                            var distanceDrop = GetDistanceDrop(distance, currentRadius);
+                            processingNeuron.UpdateWeights(currentInput, learningRate, distanceDrop);
                         }
                     }
                 }
-                iteration++;
-                learningRate = LearningRate * Math.Exp(-iteration / NumberOfIterations);
             }
+
+            iteration++;
+            learningRate = LearningRate * Math.Exp(-iteration / NumberOfIterations);
+            return iteration;
         }
 
         public (int xStart, int xEnd, int yStart, int yEnd) GetRadiusIndexes(INeuron bmu, double currentRadius)
