@@ -24,7 +24,8 @@ namespace SelfOrganizingMap
             NumberOfIterations = numberOfIterations;
             LearningRate = learningRate;
 
-            MatrixRadius = Math.Max(Width, Height) / 2;
+            //MatrixRadius = Math.Max(Width, Height) / 2;
+            MatrixRadius = Math.Min(Width, Height);
             TimeConstant = NumberOfIterations / Math.Log(MatrixRadius);
 
             InitializeConnections(inputDimension);
@@ -49,7 +50,6 @@ namespace SelfOrganizingMap
             foreach (var currentInput in input)
             {
                 var bmu = CalculateBestMatchingNeuron(currentInput);
-                //Console.Out.WriteLine($"{currentInput} => {bmu}");
                 var (xStart, xEnd, yStart, yEnd) = GetRadiusIndexes(bmu, currentRadius);
 
                 for (var x = xStart; x < xEnd; x++)
@@ -118,7 +118,6 @@ namespace SelfOrganizingMap
                 {
                     var neuron = Matrix[i, j];
                     var distance = input.EuclidianDistance(neuron.Weights);
-                    //Console.Out.WriteLine($"{i}={input[i]} => {neuron} {distance} ");
                     if (distance < bestDist)
                     {
                         bmu = neuron;
@@ -126,7 +125,6 @@ namespace SelfOrganizingMap
                     }
                 }
             }
-            //Console.Out.WriteLine();
             return bmu;
         }
 
@@ -164,12 +162,12 @@ namespace SelfOrganizingMap
             {
                 for (var j = 0; j < Height; j++)
                 {
-                    var sel = selected.Where(s => s.neuron.X == i && s.neuron.Y == j);
-                    if (sel.Count() == 1)
+                    var sel = selected.Where(s => s.neuron.X == i && s.neuron.Y == j).ToArray();
+                    if (sel.Length == 1)
                     {
                         str.Append(sel.First().id);
                     }
-                    else if (sel.Count() > 1)
+                    else if (sel.Length > 1)
                     {
                         str.Append("M");
                     }

@@ -31,7 +31,7 @@ namespace SofUi
         public List<IVector> BestMatchingVector { get; set; } = new List<IVector>();
         public List<RawDocument> BestMatchingDocs { get; set; } = new List<RawDocument>();
 
-        internal void UpdateColors()
+        internal void UpdateColors(IEnumerable<string> keys)
         {
             BackColor = Color.White;
             ForeColor = Color.Azure;
@@ -39,11 +39,30 @@ namespace SofUi
             if (BestMatchingVector.Any())
             {
                 var c = BestMatchingVector.Last().Select(v => (int)(v * 256)).ToArray();
-                BackColor = Color.FromArgb(c[0], c[1], c[2], c[3]);
-                ForeColor = c[1] + c[2] + c[3] > 500 ? Color.Black : Color.Azure;
+                if (c.Length >= 4)
+                {
+                    BackColor = Color.FromArgb(c[0], c[1], c[2], c[3]);
+                    ForeColor = c[1] + c[2] + c[3] > 800 ? Color.Black : Color.Azure;
+                }
+                else if (c.Length >= 3)
+                {
+                    BackColor = Color.FromArgb(c[0], c[1], c[2], 0);
+                    ForeColor = c[1] + c[2] > 256 ? Color.Black : Color.Azure;
+                }
+                else if (c.Length >= 2)
+                {
+                    BackColor = Color.FromArgb(c[0], c[1], 0, 0);
+                    ForeColor = c[1] > 128 ? Color.Black : Color.Azure;
+                }
+                else
+                {
+                    BackColor = Color.FromArgb(c[0], 0, 0, 0);
+                    ForeColor = Color.Azure;
+                }
+
                 System.Diagnostics.Trace.TraceInformation("BMU" + BestMatchingNeurons.Last().X + BestMatchingNeurons.Last().Y);
                 var doc = BestMatchingDocs.First();
-                foreach (var key in Form1.keys)
+                foreach (var key in keys)
                 {
                     if (doc.TryGetValue(key, out var value))
                     {
@@ -53,37 +72,37 @@ namespace SofUi
             }
         }
 
-        public string ToolTip()
+        public string ToolTip(Collector collector)
         {
             var lines = new Dictionary<string, int>();
             foreach (var doc in BestMatchingDocs)
             {
-                var line =
-                    GetValue(doc, "locationCountry") + ", " +
-                    GetValue(doc, "locationCity") + ", " +
-                    GetValue(doc, "locationAddress") + ", " +
-                    GetValue(doc, "organization_title");
-
-                if (lines.ContainsKey(line))
+                var line = new StringBuilder();
+                foreach (var key in collector.Keys)
                 {
-                    lines[line]++;
+                    line.Append(GetValue(doc, key)).Append(", ");
+                }
+
+                if (lines.ContainsKey(line.ToString()))
+                {
+                    lines[line.ToString()]++;
                 }
                 else
                 {
-                    lines.Add(line, 1);
+                    lines.Add(line.ToString(), 1);
                 }
             }
 
             var toolTip = new StringBuilder();
-            foreach (var line in lines.OrderByDescending(x => x.Value))
+            foreach (var (key, value) in lines.OrderByDescending(x => x.Value))
             {
-                toolTip.AppendLine(line.Value + " : " + line.Key);
+                toolTip.AppendLine(value + " : " + key);
             }
 
             return toolTip.ToString();
         }
 
-        private string GetValue(RawDocument doc, string key)
+        private static string GetValue(RawDocument doc, string key)
         {
             if (doc.TryGetValue(key, out var value)) return value as string;
 

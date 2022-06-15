@@ -228,8 +228,8 @@ namespace SOFM.Tests
         [TestMethod]
         public void TestCollector()
         {
-            var stream = File.ReadAllText("10.txt");
-            //var stream = File.ReadAllText("users.txt");
+            //var stream = File.ReadAllText("10.txt");
+            var stream = File.ReadAllText("c:\\temp\\sofall\\data.json");
             var json = JsonConvert.DeserializeObject<RawSearchResult>(stream);
 
             var keys = new List<string> { "locationCountry", "locationCity", "locationAddress", "organization_title" };
@@ -247,10 +247,38 @@ namespace SOFM.Tests
             foreach (var key in keys)
             {
                 Console.Out.WriteLine(key);
+                Console.Out.WriteLine("[");
                 foreach (var value in collector.GetList(key))
                 {
-                    Console.Out.WriteLine(value);
+                    RawDocument exampleDoc = null;
+                    string example = "";
+                    try
+                    {
+                        exampleDoc = null;
+                        foreach (var doc in collector.Documents)
+                        {
+                            if (doc.TryGetValue(key, out var v1) && (string)v1 == value)
+                            {
+                                exampleDoc = doc;
+                                break;
+                            }
+                        }
+
+                        foreach (var key1 in keys)
+                        {
+                            if (exampleDoc.TryGetValue(key1, out var value1))
+                            {
+                                example += $"{value1}, ";
+                            }
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        example = ex.Message;
+                    }
+                    Console.Out.WriteLine($"\"{value}\", /* {example} */");
                 }
+                Console.Out.WriteLine("]");
                 Console.Out.WriteLine();
             }
 
