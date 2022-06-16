@@ -24,8 +24,8 @@ namespace SelfOrganizingMap
             NumberOfIterations = numberOfIterations;
             LearningRate = learningRate;
 
-            //MatrixRadius = Math.Max(Width, Height) / 2;
-            MatrixRadius = Math.Min(Width, Height);
+            MatrixRadius = Math.Max(Width, Height) / 2.0;
+            //MatrixRadius = Math.Min(Width, Height);
             TimeConstant = NumberOfIterations / Math.Log(MatrixRadius);
 
             InitializeConnections(inputDimension);

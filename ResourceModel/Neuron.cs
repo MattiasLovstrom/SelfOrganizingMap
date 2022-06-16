@@ -17,9 +17,10 @@ namespace SelfOrganizingMap
 
             for (var i = 0; i < numOfWeights; i++)
             {
-                Weights.Add(((i + 1) / numOfWeights));
+                //Weights.Add(0.5);
+                //Weights.Add(((i + 1) / numOfWeights));
                 //Weights.Add(random.NextDouble() * ((i + 1) / numOfWeights));
-                //Weights.Add(random.NextDouble());
+                Weights.Add(random.NextDouble());
             }
         }
 
