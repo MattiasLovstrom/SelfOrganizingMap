@@ -2,6 +2,7 @@
 using SOFM.Tests;
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -34,6 +35,7 @@ namespace SofUi
 
         private void TestMap()
         {
+            var stopWatch = new Stopwatch();
             var collector = new Collector(DataFolder);
             
             toolStripProgressBar1.Minimum = 1;
@@ -43,13 +45,21 @@ namespace SofUi
             var map = SoMap.Load(DataFolder); 
             if (map == null)
             {
+                stopWatch.Start();
+                toolStripStatusLabel2.Text = "Traning network";
                 map = TrainMap(collector);
                 var resultFolder = $"{DataFolder}\\somap_{map.NumberOfIterations}_{map.Width}_{map.Height}_{DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss")}";
                 map.Save(resultFolder);
                 collector.Save(resultFolder);
+                stopWatch.Stop();
+                toolStripStatusLabel2.Text = "Traning network: " + stopWatch.ElapsedMilliseconds /1000 + " seconds ";
             }
 
+            stopWatch.Reset();
+            stopWatch.Start();
             Test(collector, map);
+            stopWatch.Stop();
+            toolStripStatusLabel2.Text += "Testing network: " + stopWatch.ElapsedMilliseconds + "ms ";
             Refresh();
         }
 
