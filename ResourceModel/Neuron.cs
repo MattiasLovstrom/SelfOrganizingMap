@@ -1,4 +1,5 @@
 ﻿using System;
+using SOFM;
 
 namespace SelfOrganizingMap
 {
@@ -6,7 +7,7 @@ namespace SelfOrganizingMap
     {
         public int X { get; set; }
         public int Y { get; set; }
-        public IVector Weights { get; set; }
+        public Vector Weights { get; set; }
 
         public Neuron(int numOfWeights, int x, int y)
         {

@@ -9,6 +9,7 @@ namespace SOFM.Tests
     {
         private Dictionary<string, List<string>> _lists = new Dictionary<string, List<string>>();
         private List<RawDocument> _data = new List<RawDocument>();
+        private string _dataFilePath;
         public List<string> Keys { get; }
 
         public Collector(List<string> keys)
@@ -38,7 +39,8 @@ namespace SOFM.Tests
                 }
             }
 
-            using var dataFile = File.OpenText($"{path}\\data.json");
+            _dataFilePath = $"{path}\\data.json";
+            using var dataFile = File.OpenText(_dataFilePath);
             var data = (RawSearchResult)serializer.Deserialize(dataFile, typeof(RawSearchResult));
             foreach (var docList in data.Components.Doclists)
             {
@@ -91,6 +93,22 @@ namespace SOFM.Tests
         public void SetList(string key, IEnumerable<string> list)
         {
             _lists[key] = new List<string>(list);
+        }
+
+        public void Save(string resultFolder)
+        {
+            if (!Directory.Exists(resultFolder))
+            {
+                Directory.CreateDirectory(resultFolder);
+            }
+            File.Copy(_dataFilePath, $"{resultFolder}\\data.json");
+            File.WriteAllText($"{resultFolder}\\keys.json", JsonConvert.SerializeObject(Keys, Formatting.Indented));
+
+            foreach (var key in Keys)
+            {
+                var fileName = $"{resultFolder}\\{key}.json";
+                File.WriteAllText(fileName, JsonConvert.SerializeObject(_lists[key],Formatting.Indented));
+            }
         }
     }
 

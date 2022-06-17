@@ -1,26 +1,33 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace SelfOrganizingMap
 {
     public class SoMap
     {
-        public INeuron[,] Matrix;
+        public Neuron[,] Matrix;
         public int Height;
         public int Width;
         public double MatrixRadius;
-        public double NumberOfIterations;
+        public int NumberOfIterations;
         public double TimeConstant;
         public double LearningRate;
 
         public event EventHandler Iterate;
 
-        public SoMap(int width, int height, int inputDimension, int numberOfIterations, double learningRate)
+        public SoMap(
+            int width, 
+            int height, 
+            int inputDimension, 
+            int numberOfIterations, 
+            double learningRate)
         {
             Width = width;
             Height = height;
-            Matrix = new INeuron[Width, Height];
+            Matrix = new Neuron[Width, Height];
             NumberOfIterations = numberOfIterations;
             LearningRate = learningRate;
 
@@ -181,6 +188,23 @@ namespace SelfOrganizingMap
             }
 
             Console.Out.WriteLine(str);
+        }
+
+        public void Save(string folder)
+        {
+            if (!Directory.Exists(folder))
+            {
+                Directory.CreateDirectory(folder);
+            }
+            File.WriteAllText($"{folder}\\somap.json", JsonConvert.SerializeObject(this,Formatting.Indented));
+        }
+
+        public static SoMap Load(string folder)
+        {
+            var fileName = $"{folder}\\somap.json";
+            if (!File.Exists(fileName)) return null;
+
+            return JsonConvert.DeserializeObject<SoMap>(File.ReadAllText(fileName));
         }
     }
 }

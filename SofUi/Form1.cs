@@ -1,7 +1,6 @@
 ﻿using SelfOrganizingMap;
 using SOFM.Tests;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
@@ -12,10 +11,21 @@ namespace SofUi
 {
     public partial class Form1 : Form
     {
+        //private const string DataFolder = "c:\\temp\\Sof1000";
+        //private const string DataFolder = "c:\\temp\\Sof10";
+        private const string DataFolder = "c:\\temp\\somap10_country";
+        //private const string DataFolder = "c:\\temp\\SofUnsorted10";
+        //private const string DataFolder = "c:\\temp\\SofAll";
+
         private readonly int _widthCount = 10;
         private readonly int _heightCount = 10;
 
-        private OutputNeuron[][] _map;
+        private int _numberOfIterations = 1000;
+        private double _learningRate = 0.1;
+        private int stepCounter = 10;
+        private int showNeuronsCounter = 100;
+
+        private OutputNeuron[][] _outputNeurons;
 
         public Form1()
         {
@@ -24,25 +34,33 @@ namespace SofUi
 
         private void TestMap()
         {
-            //var collector = new Collector("c:\\temp\\Sof10");
-            var collector = new Collector("c:\\temp\\Sof1000");
-            //var collector = new Collector("c:\\temp\\SofUnsorted10");
-            //var collector = new Collector("c:\\temp\\SofAll");
-
-            var numberOfIterations = 1000;
-            var LearningRate = 0.1;
-            var stepCounter = 10;
-            var showNeuronsCounter = 100;
-
+            var collector = new Collector(DataFolder);
+            
             toolStripProgressBar1.Minimum = 1;
-            toolStripProgressBar1.Maximum = numberOfIterations;
+            toolStripProgressBar1.Maximum = _numberOfIterations;
             toolStripProgressBar1.Step = stepCounter;
+
+            var map = SoMap.Load(DataFolder); 
+            if (map == null)
+            {
+                map = TrainMap(collector);
+                var resultFolder = $"{DataFolder}\\somap_{map.NumberOfIterations}_{map.Width}_{map.Height}_{DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss")}";
+                map.Save(resultFolder);
+                collector.Save(resultFolder);
+            }
+
+            Test(collector, map);
+            Refresh();
+        }
+
+        private SoMap TrainMap(Collector collector)
+        {
             var map = new SoMap(
                 width: _widthCount,
                 height: _heightCount,
                 inputDimension: collector.Keys.Count,
-                numberOfIterations: numberOfIterations,
-                learningRate: LearningRate);
+                numberOfIterations: _numberOfIterations,
+                learningRate: _learningRate);
 
             var cnt = 0;
             var vectors = collector.Documents.Select(doc => collector.ToNormalizedData(doc)).ToArray();
@@ -56,36 +74,36 @@ namespace SofUi
                     toolStripProgressBar1.PerformStep();
                     Refresh();
                 }
+
                 if (cnt % showNeuronsCounter == 0)
                 {
                     Test(collector, map);
                     Refresh();
                 }
+
                 Application.DoEvents();
 
                 cnt++;
             }
 
-            Test(collector, map);
-            Refresh();
-            //ShowCollector(collector);
+            return map;
         }
 
 
         protected override void OnResize(EventArgs e)
         {
-            if (_map == null)
+            if (_outputNeurons == null)
             {
-                _map = new OutputNeuron[_heightCount][];
+                _outputNeurons = new OutputNeuron[_heightCount][];
                 for (var y = 0; y < _heightCount; y++)
                 {
-                    _map[y] = new OutputNeuron[_widthCount];
+                    _outputNeurons[y] = new OutputNeuron[_widthCount];
                     for (var x = 0; x < _widthCount; x++)
                     {
                         var n = new OutputNeuron { Parent = this };
                         Controls.Add(n);
                         toolTip1.SetToolTip(n, "No match");
-                        _map[y][x] = n;
+                        _outputNeurons[y][x] = n;
                     }
                 }
             }
@@ -99,7 +117,7 @@ namespace SofUi
             {
                 for (var x = 0; x < _widthCount; x++)
                 {
-                    var n = _map[y][x];
+                    var n = _outputNeurons[y][x];
                     n.Bounds = new Rectangle(topx + x * widthNeuron, topy + y * heightNeuron, widthNeuron - 2, heightNeuron - 2);
                 }
             }
@@ -168,7 +186,7 @@ namespace SofUi
             {
                 for (var x = 0; x < _widthCount; x++)
                 {
-                    var n = _map[y][x];
+                    var n = _outputNeurons[y][x];
                     toolTip1.SetToolTip(n, "No match");
                     n.Clear();
                 }
@@ -177,12 +195,12 @@ namespace SofUi
             foreach (var doc in collector.Documents)
             {
                 var currentNeuron = map.CalculateBestMatchingNeuron(collector.ToNormalizedData(doc));
-                _map[currentNeuron.Y][currentNeuron.X].BestMatchingDocs.Add(doc);
-                _map[currentNeuron.Y][currentNeuron.X].BestMatchingNeurons.Add(currentNeuron);
-                _map[currentNeuron.Y][currentNeuron.X].BestMatchingVector.Add(collector.ToNormalizedData(doc));
-                _map[currentNeuron.Y][currentNeuron.X].UpdateColors(collector.Keys);
+                _outputNeurons[currentNeuron.Y][currentNeuron.X].BestMatchingDocs.Add(doc);
+                _outputNeurons[currentNeuron.Y][currentNeuron.X].BestMatchingNeurons.Add(currentNeuron);
+                _outputNeurons[currentNeuron.Y][currentNeuron.X].BestMatchingVector.Add(collector.ToNormalizedData(doc));
+                _outputNeurons[currentNeuron.Y][currentNeuron.X].UpdateColors(collector.Keys);
                 toolTip1.SetToolTip(
-                    _map[currentNeuron.Y][currentNeuron.X], _map[currentNeuron.Y][currentNeuron.X]
+                    _outputNeurons[currentNeuron.Y][currentNeuron.X], _outputNeurons[currentNeuron.Y][currentNeuron.X]
                         .ToolTip(collector));
             }
         }

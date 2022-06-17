@@ -1,11 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SOFM;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SelfOrganizingMap;
+using System;
 
 namespace SOFM.Tests
 {
@@ -22,7 +17,7 @@ namespace SOFM.Tests
                 numberOfIterations: 100,
                 learningRate: 0.1);
 
-            var matrix = new INeuron[2, 2];
+            var matrix = new Neuron[2, 2];
             matrix[0, 0] = new Neuron(2, 0, 0) { Weights = new Vector { 0.50, 0.51 } };
             matrix[1, 0] = new Neuron(2, 1, 0) { Weights = new Vector { 0.52, 0.53 } };
             matrix[0, 1] = new Neuron(2, 0, 1) { Weights = new Vector { 0.5, 0.55 } };
@@ -56,7 +51,7 @@ namespace SOFM.Tests
                 numberOfIterations: 10,
                 learningRate: 0.5);
 
-            var matrix = new INeuron[2, 2];
+            var matrix = new Neuron[2, 2];
             matrix[0, 0] = new Neuron(2, 0, 0) { Weights = new Vector { 0.45, 0.89 } };
             matrix[1, 0] = new Neuron(2, 0, 1) { Weights = new Vector { 0.55, 0.83 } };
             matrix[0, 1] = new Neuron(2, 1, 0) { Weights = new Vector { 0.62, 0.78 } };
@@ -93,7 +88,7 @@ namespace SOFM.Tests
                 numberOfIterations: 1000,
                 learningRate: 0.5);
 
-            var matrix = new INeuron[2, 2];
+            var matrix = new Neuron[2, 2];
             matrix[0, 0] = new Neuron(2, 0, 0) { Weights = new Vector { 0.45, 0.89 }};
             matrix[1, 0] = new Neuron(2, 0, 1) { Weights = new Vector { 0.55, 0.83 }};
             matrix[0, 1] = new Neuron(2, 1, 0) { Weights = new Vector { 0.62, 0.78 }};
@@ -130,7 +125,7 @@ namespace SOFM.Tests
                 numberOfIterations: 1000,
                 learningRate: 0.5);
 
-            var matrix = new INeuron[2, 2];
+            var matrix = new Neuron[2, 2];
             matrix[0, 0] = new Neuron(2, 0, 0) { Weights = new Vector { 0.45, 0.89 }};
             matrix[1, 0] = new Neuron(2, 0, 1) { Weights = new Vector { 0.55, 0.83 }};
             matrix[0, 1] = new Neuron(2, 1, 0) { Weights = new Vector { 0.62, 0.78 }};
@@ -171,7 +166,7 @@ namespace SOFM.Tests
                 numberOfIterations: 1,
                 learningRate: 0.5);
 
-            var matrix = new INeuron[2, 2];
+            var matrix = new Neuron[2, 2];
             matrix[0, 0] = new Neuron(2, 0, 0) { Weights = new Vector { 0.45, 0.89 }};
             matrix[1, 0] = new Neuron(2, 0, 1) { Weights = new Vector { 0.55, 0.83 }};
             matrix[0, 1] = new Neuron(2, 1, 0) { Weights = new Vector { 0.62, 0.78 }};
