@@ -1,5 +1,5 @@
 ﻿using System;
-using SOFM;
+using ResourceModel;
 
 namespace SelfOrganizingMap
 {
@@ -14,7 +14,7 @@ namespace SelfOrganizingMap
             X = x;
             Y = y;
             var random = new Random();
-            Weights = new SOFM.Vector();
+            Weights = new Vector();
 
             for (var i = 0; i < numOfWeights; i++)
             {

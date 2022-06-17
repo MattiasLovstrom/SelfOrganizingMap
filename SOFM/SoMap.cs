@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
+using ResourceModel;
 
 namespace SelfOrganizingMap
 {
@@ -38,7 +39,7 @@ namespace SelfOrganizingMap
             InitializeConnections(inputDimension);
         }
 
-        public void Train(SOFM.Vector[] input)
+        public void Train(Vector[] input)
         {
             var iteration = 0;
             var learningRate = LearningRate;
@@ -49,7 +50,7 @@ namespace SelfOrganizingMap
             }
         }
 
-        public int TrainIteration(SOFM.Vector[] input, int iteration, ref double learningRate)
+        public int TrainIteration(Vector[] input, int iteration, ref double learningRate)
         {
             Iterate?.Invoke(this, EventArgs.Empty);
             var currentRadius = CalculateNeighborhoodRadius(iteration);

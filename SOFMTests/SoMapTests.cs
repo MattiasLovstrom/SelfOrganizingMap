@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SelfOrganizingMap;
 using System;
+using ResourceModel;
 
 namespace SOFM.Tests
 {

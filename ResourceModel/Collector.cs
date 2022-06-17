@@ -1,18 +1,17 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using Newtonsoft.Json;
 
-namespace SOFM.Tests
+namespace ResourceModel
 {
     public class Collector
     {
-        private Dictionary<string, List<string>> _lists = new Dictionary<string, List<string>>();
-        private List<RawDocument> _data = new List<RawDocument>();
-        private string _dataFilePath;
+        private readonly Dictionary<string, List<string>> _lists = new Dictionary<string, List<string>>();
+        private readonly List<RawDocument> _data = new List<RawDocument>();
+        private readonly string _dataFilePath;
         public List<string> Keys { get; }
 
-        public Collector(List<string> keys)
+        public Collector(IEnumerable<string> keys)
         {
             foreach (var key in keys)
             {
@@ -42,7 +41,7 @@ namespace SOFM.Tests
             _dataFilePath = $"{path}\\data.json";
             using var dataFile = File.OpenText(_dataFilePath);
             var data = (RawSearchResult)serializer.Deserialize(dataFile, typeof(RawSearchResult));
-            foreach (var docList in data.Components.Doclists)
+            foreach (var docList in data.Components.DocLists)
             {
                 foreach (var document in docList.Documents)
                 {
@@ -109,31 +108,6 @@ namespace SOFM.Tests
                 var fileName = $"{resultFolder}\\{key}.json";
                 File.WriteAllText(fileName, JsonConvert.SerializeObject(_lists[key],Formatting.Indented));
             }
-        }
-    }
-
-    public class CollectorData
-    {
-        private readonly Dictionary<string, string> _keyValue = new Dictionary<string, string>();
-
-        public CollectorData(IEnumerable<string> keys, RawDocument document)
-        {
-            foreach (var key in keys)
-            {
-                Add(key, document.Get(key).FirstOrDefault());
-            }
-        }
-
-        private void Add(string key, string data)
-        {
-            if (data == null) return;
-
-            _keyValue.Add(key, data);
-        }
-
-        public bool TryGetValue(string key, out string value)
-        {
-            return _keyValue.TryGetValue(key, out value);
         }
     }
 }

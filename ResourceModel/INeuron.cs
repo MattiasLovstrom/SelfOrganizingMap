@@ -1,4 +1,4 @@
-﻿using SOFM;
+﻿using ResourceModel;
 
 namespace SelfOrganizingMap
 {

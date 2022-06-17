@@ -1,4 +1,4 @@
-﻿namespace SOFM.Tests
+﻿namespace ResourceModel
 {
     public class RawSearchDocList
     {

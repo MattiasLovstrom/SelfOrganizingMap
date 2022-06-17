@@ -1,20 +1,19 @@
 ﻿using SelfOrganizingMap;
-using SOFM.Tests;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
+using ResourceModel;
 
 namespace SofUi
 {
     public partial class Form1 : Form
     {
-        //private const string DataFolder = "c:\\temp\\Sof1000";
+        private const string DataFolder = "c:\\temp\\Sof1000";
         //private const string DataFolder = "c:\\temp\\Sof10";
-        private const string DataFolder = "c:\\temp\\somap10_country";
+        //private const string DataFolder = "c:\\temp\\somap10_country";
         //private const string DataFolder = "c:\\temp\\SofUnsorted10";
         //private const string DataFolder = "c:\\temp\\SofAll";
 
@@ -132,62 +131,6 @@ namespace SofUi
                 }
             }
             base.OnResize(e);
-        }
-
-        private static void ShowCollector(Collector collector)
-        {
-
-            foreach (var key in collector.Keys)
-            {
-                var values = new StringBuilder();
-                values.Append(key);
-                values.AppendLine("[");
-                foreach (var value in collector.GetList(key))
-                {
-                    var example = "";
-                    try
-                    {
-                        RawDocument exampleDoc = null;
-                        foreach (var doc in collector.Documents)
-                        {
-                            if (doc.TryGetValue(key, out var v1) && (string)v1 == value)
-                            {
-                                exampleDoc = doc;
-                                break;
-                            }
-                        }
-
-                        if (exampleDoc != null)
-                        {
-                            foreach (var key1 in collector.Keys)
-                            {
-                                if (exampleDoc.TryGetValue(key1, out var value1))
-                                {
-                                    example += $"{value1}, ";
-                                }
-                            }
-                        }
-                        else
-                        {
-                            example = "";
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        example = ex.Message;
-                    }
-
-                    values.Append($"\"{value}\", ");
-                    if (!string.IsNullOrEmpty(example))
-                    {
-                        values.Append($"/* {example} */");
-                    }
-                    values.AppendLine();
-                }
-                values.AppendLine("]");
-                values.AppendLine();
-                MessageBox.Show(values.ToString());
-            }
         }
 
         private void Test(Collector collector, SoMap map)

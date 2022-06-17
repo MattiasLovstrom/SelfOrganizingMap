@@ -1,4 +1,5 @@
 ﻿using System;
+using ResourceModel;
 
 namespace SelfOrganizingMap
 {
@@ -13,16 +14,16 @@ namespace SelfOrganizingMap
                 numberOfIterations: 10000,
                 learningRate: 0.01);
 
-            var inputVector0 = new SOFM.Vector { 0, 0 };   // 1:1
-            var inputVector1 = new SOFM.Vector { 1, 1 };   // 3:5
-            var inputVector2 = new SOFM.Vector { 2, 2 };   // 9:5
-            var inputVector3 = new SOFM.Vector { 3, 3 };   // 5:0
-            var inputVector4 = new SOFM.Vector { 4, 4 };   // 7:0
-            var inputVector5 = new SOFM.Vector { 5, 5 };   // 7:2
-            var inputVector6 = new SOFM.Vector { 6, 6 };   // 9:2
-            var testVectorA = new SOFM.Vector { 2.1, 2.1 };// 8:5
-            var testVectorB = new SOFM.Vector { 2.2, 2.2 };// 4:3
-            var testVectorC = new SOFM.Vector { 1.9, 1.9 };// 9:5
+            var inputVector0 = new Vector { 0, 0 };   // 1:1
+            var inputVector1 = new Vector { 1, 1 };   // 3:5
+            var inputVector2 = new Vector { 2, 2 };   // 9:5
+            var inputVector3 = new Vector { 3, 3 };   // 5:0
+            var inputVector4 = new Vector { 4, 4 };   // 7:0
+            var inputVector5 = new Vector { 5, 5 };   // 7:2
+            var inputVector6 = new Vector { 6, 6 };   // 9:2
+            var testVectorA = new Vector { 2.1, 2.1 };// 8:5
+            var testVectorB = new Vector { 2.2, 2.2 };// 4:3
+            var testVectorC = new Vector { 1.9, 1.9 };// 9:5
             // 00 --
             var input = new[]
             {

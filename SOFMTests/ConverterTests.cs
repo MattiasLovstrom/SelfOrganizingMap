@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace SelfOrganizingMap.Tests
 {
-    [TestClass()]
+    [TestClass]
     public class ConverterTests
     {
         [TestMethod]

@@ -9,6 +9,7 @@ using SelfOrganizingMap;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using System.Linq;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
+using ResourceModel;
 
 namespace SOFM.Tests
 {
@@ -38,7 +39,7 @@ namespace SOFM.Tests
 
             var collector = new Collector(keys);
 
-            foreach (var doclist in json.Components.Doclists)
+            foreach (var doclist in json.Components.DocLists)
             {
                 foreach (var document in doclist.Documents)
                 {
@@ -88,7 +89,7 @@ namespace SOFM.Tests
 
             var collector = new Collector(keys);
 
-            foreach (var doclist in json.Components.Doclists)
+            foreach (var doclist in json.Components.DocLists)
             {
                 foreach (var document in doclist.Documents)
                 {
@@ -236,7 +237,7 @@ namespace SOFM.Tests
 
             var collector = new Collector(keys);
 
-            foreach (var doclist in json.Components.Doclists)
+            foreach (var doclist in json.Components.DocLists)
             {
                 foreach (var document in doclist.Documents)
                 {

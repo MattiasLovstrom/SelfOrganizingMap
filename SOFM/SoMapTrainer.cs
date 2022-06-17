@@ -1,13 +1,15 @@
-﻿namespace SelfOrganizingMap
+﻿using ResourceModel;
+
+namespace SelfOrganizingMap
 {
     public class SoMapTrainer
     {
         private readonly SoMap _map;
-        private readonly SOFM.Vector[] _input;
+        private readonly Vector[] _input;
         private int _iteration;
         private double _learningRate;
 
-        public SoMapTrainer(SoMap map, SOFM.Vector[] input)
+        public SoMapTrainer(SoMap map, Vector[] input)
         {
             _map = map;
             _input = input;

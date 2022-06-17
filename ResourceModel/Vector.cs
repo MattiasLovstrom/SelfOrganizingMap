@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SelfOrganizingMap;
 
-namespace SOFM
+namespace ResourceModel
 {
     public class Vector : List<double>, IVector
     {
