@@ -39,19 +39,19 @@ namespace SelfOrganizingMap
 
             testObject.Iterate += (sender, eventArgs) =>
             {
-                Console.SetCursorPosition(0,0);
+                Console.SetCursorPosition(0, 0);
                 Console.Out.WriteLine(i++);
                 testObject.Display(
-                    ("0", testObject.CalculateBestMatchingNeuron(inputVector0)),
-                    ("1", testObject.CalculateBestMatchingNeuron(inputVector1)),
-                    ("2", testObject.CalculateBestMatchingNeuron(inputVector2)),
-                    ("3", testObject.CalculateBestMatchingNeuron(inputVector3)),
-                    ("4", testObject.CalculateBestMatchingNeuron(inputVector4)),
-                    ("5", testObject.CalculateBestMatchingNeuron(inputVector5)),
-                    ("6", testObject.CalculateBestMatchingNeuron(inputVector6)),
-                    ("A", testObject.CalculateBestMatchingNeuron(testVectorA)),
-                    ("B", testObject.CalculateBestMatchingNeuron(testVectorB)),
-                    ("C", testObject.CalculateBestMatchingNeuron(testVectorC))
+                    ("0", testObject.Nn.CalculateBestMatchingNeuron(new[] { inputVector0 })[0]),
+                    ("1", testObject.Nn.CalculateBestMatchingNeuron(new[] { inputVector1 })[0]),
+                    ("2", testObject.Nn.CalculateBestMatchingNeuron(new[] { inputVector2 })[0]),
+                    ("3", testObject.Nn.CalculateBestMatchingNeuron(new[] { inputVector3 })[0]),
+                    ("4", testObject.Nn.CalculateBestMatchingNeuron(new[] { inputVector4 })[0]),
+                    ("5", testObject.Nn.CalculateBestMatchingNeuron(new[] { inputVector5 })[0]),
+                    ("6", testObject.Nn.CalculateBestMatchingNeuron(new[] { inputVector6 })[0]),
+                    ("A", testObject.Nn.CalculateBestMatchingNeuron(new[] { testVectorA })[0]),
+                    ("B", testObject.Nn.CalculateBestMatchingNeuron(new[] { testVectorB })[0]),
+                    ("C", testObject.Nn.CalculateBestMatchingNeuron(new[] { testVectorC })[0])
                 );
                 //Thread.Sleep(2);
             };
@@ -59,16 +59,16 @@ namespace SelfOrganizingMap
             testObject.Train(input);
             //Console.Out.WriteLine("input");
             testObject.Display(
-                ("0", testObject.CalculateBestMatchingNeuron(inputVector0)),
-                ("1", testObject.CalculateBestMatchingNeuron(inputVector1)),
-                ("2", testObject.CalculateBestMatchingNeuron(inputVector2)),
-                ("3", testObject.CalculateBestMatchingNeuron(inputVector3)),
-                ("4", testObject.CalculateBestMatchingNeuron(inputVector4)),
-                ("5", testObject.CalculateBestMatchingNeuron(inputVector5)),
-                ("6", testObject.CalculateBestMatchingNeuron(inputVector6)),
-                ("A", testObject.CalculateBestMatchingNeuron(testVectorA)),
-                ("B", testObject.CalculateBestMatchingNeuron(testVectorB)),
-                ("C", testObject.CalculateBestMatchingNeuron(testVectorC))
+                ("0", testObject.Nn.CalculateBestMatchingNeuron(new[] { inputVector0})[0]),
+                ("1", testObject.Nn.CalculateBestMatchingNeuron(new[] { inputVector1})[0]),
+                ("2", testObject.Nn.CalculateBestMatchingNeuron(new[] { inputVector2})[0]),
+                ("3", testObject.Nn.CalculateBestMatchingNeuron(new[] { inputVector3})[0]),
+                ("4", testObject.Nn.CalculateBestMatchingNeuron(new[] { inputVector4})[0]),
+                ("5", testObject.Nn.CalculateBestMatchingNeuron(new[] { inputVector5})[0]),
+                ("6", testObject.Nn.CalculateBestMatchingNeuron(new[] { inputVector6})[0]),
+                ("A", testObject.Nn.CalculateBestMatchingNeuron(new[] { testVectorA })[0]),
+                ("B", testObject.Nn.CalculateBestMatchingNeuron(new[] { testVectorB })[0]),
+                ("C", testObject.Nn.CalculateBestMatchingNeuron(new[] { testVectorC })[0])
             );
         }
     }

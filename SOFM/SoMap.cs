@@ -9,7 +9,7 @@ namespace SelfOrganizingMap
 {
     public class SoMap
     {
-        public Neuron[,] Matrix;
+        public Network Nn;
         public int Height;
         public int Width;
         public double MatrixRadius;
@@ -28,15 +28,13 @@ namespace SelfOrganizingMap
         {
             Width = width;
             Height = height;
-            Matrix = new Neuron[Width, Height];
+            Nn = new Network(inputDimension, width, height);
             NumberOfIterations = numberOfIterations;
             LearningRate = learningRate;
 
             MatrixRadius = Math.Max(Width, Height) / 2.0;
             //MatrixRadius = Math.Min(Width, Height);
             TimeConstant = NumberOfIterations / Math.Log(MatrixRadius);
-
-            InitializeConnections(inputDimension);
         }
 
         public void Train(Vector[] input)
@@ -55,9 +53,11 @@ namespace SelfOrganizingMap
             Iterate?.Invoke(this, EventArgs.Empty);
             var currentRadius = CalculateNeighborhoodRadius(iteration);
 
+            var bmus = Nn.CalculateBestMatchingNeuron(input);
+            var cnt = 0;
             foreach (var currentInput in input)
             {
-                var bmu = CalculateBestMatchingNeuron(currentInput);
+                var bmu = bmus[cnt++]; 
                 var (xStart, xEnd, yStart, yEnd) = GetRadiusIndexes(bmu, currentRadius);
 
                 for (var x = xStart; x < xEnd; x++)
@@ -102,7 +102,7 @@ namespace SelfOrganizingMap
             if (indexX > Width || indexY > Height)
                 throw new ArgumentException("Wrong index!");
 
-            return Matrix[indexX, indexY];
+            return Nn.GetNeuron(indexX, indexY);
         }
 
         public double CalculateNeighborhoodRadius(double iteration)
@@ -115,38 +115,9 @@ namespace SelfOrganizingMap
             return Math.Exp(-(Math.Pow(distance, 2.0) / Math.Pow(radius, 2.0)));
         }
 
-        public INeuron CalculateBestMatchingNeuron(IVector input)
-        {
-            var bmu = Matrix[0, 0];
-            var bestDist = input.EuclidianDistance(bmu.Weights);
+        
 
-            for (var i = 0; i < Width; i++)
-            {
-                for (var j = 0; j < Height; j++)
-                {
-                    var neuron = Matrix[i, j];
-                    var distance = input.EuclidianDistance(neuron.Weights);
-                    if (distance < bestDist)
-                    {
-                        bmu = neuron;
-                        bestDist = distance;
-                    }
-                }
-            }
-            return bmu;
-        }
-
-        private void InitializeConnections(int inputDimension)
-        {
-            for (int i = 0; i < Width; i++)
-            {
-                for (int j = 0; j < Height; j++)
-                {
-                    Matrix[i, j] = new Neuron(inputDimension, i, j);
-                }
-            }
-        }
-
+        
         public override string ToString()
         {
             var str = new StringBuilder();
@@ -154,7 +125,7 @@ namespace SelfOrganizingMap
             {
                 for (var j = 0; j < Height; j++)
                 {
-                    str.Append(Matrix[i, j]).Append(" ");
+                    str.Append(Nn.GetNeuron(i, j)).Append(" ");
                 }
 
                 str.AppendLine();

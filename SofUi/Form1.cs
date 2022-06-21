@@ -146,9 +146,12 @@ namespace SofUi
                 }
             }
 
+            var bmus = map.Nn.CalculateBestMatchingNeuron(collector.Documents.Select(x =>
+                collector.ToNormalizedData(x)).ToArray());
+            var cnt = 0;
             foreach (var doc in collector.Documents)
             {
-                var currentNeuron = map.CalculateBestMatchingNeuron(collector.ToNormalizedData(doc));
+                var currentNeuron = bmus[cnt++];
                 _outputNeurons[currentNeuron.Y][currentNeuron.X].BestMatchingDocs.Add(doc);
                 _outputNeurons[currentNeuron.Y][currentNeuron.X].BestMatchingNeurons.Add(currentNeuron);
                 _outputNeurons[currentNeuron.Y][currentNeuron.X].BestMatchingVector.Add(collector.ToNormalizedData(doc));
