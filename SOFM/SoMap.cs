@@ -64,12 +64,12 @@ namespace SelfOrganizingMap
                 {
                     for (var y = yStart; y < yEnd; y++)
                     {
-                        var processingNeuron = GetNeuron(x, y);
-                        var distance = Nn.Distance(bmu,processingNeuron);
+                        //var processingNeuron = GetNeuron(x, y);
+                        var distance = Nn.Distance(bmu.X, bmu.Y,x,y);
                         if (distance <= Math.Pow(currentRadius, 2.0))
                         {
                             var distanceDrop = GetDistanceDrop(distance, currentRadius);
-                            Nn.UpdateWeights(processingNeuron, currentInput, learningRate, distanceDrop);
+                            Nn.UpdateWeights(x,y, currentInput, learningRate, distanceDrop);
                         }
                     }
                 }
@@ -97,14 +97,6 @@ namespace SelfOrganizingMap
             return (xStart, xEnd, yStart, yEnd);
         }
 
-        public Neuron GetNeuron(int indexX, int indexY)
-        {
-            if (indexX > Width || indexY > Height)
-                throw new ArgumentException("Wrong index!");
-
-            return Nn.GetNeuron(indexX, indexY);
-        }
-
         public double CalculateNeighborhoodRadius(double iteration)
         {
             return MatrixRadius * Math.Exp(-iteration / TimeConstant);
@@ -115,24 +107,6 @@ namespace SelfOrganizingMap
             return Math.Exp(-(Math.Pow(distance, 2.0) / Math.Pow(radius, 2.0)));
         }
 
-        
-
-        
-        public override string ToString()
-        {
-            var str = new StringBuilder();
-            for (var i = 0; i < Width; i++)
-            {
-                for (var j = 0; j < Height; j++)
-                {
-                    str.Append(Nn.GetNeuron(i, j)).Append(" ");
-                }
-
-                str.AppendLine();
-            }
-
-            return str.ToString();
-        }
 
         public void Display(params (string id, INeuron neuron)[] selected)
         {

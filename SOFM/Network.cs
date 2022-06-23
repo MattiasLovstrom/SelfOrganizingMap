@@ -34,8 +34,6 @@ namespace SelfOrganizingMap
             }
         }
 
-
-
         public double[] GetWeights(int x, int y)
         {
             var result = new double[_inputDimension];
@@ -62,29 +60,11 @@ namespace SelfOrganizingMap
             };
         }
 
-        public Neuron GetNeuron(int x, int y)
+        public void UpdateWeights(int x, int y, IVector input, double distanceDecay, double learningRate)
         {
-            var v = new Vector();
-            foreach (var weight in GetWeights(x, y))
+            for (int i = 0; i < GetWeights(x,y).Length; i++)
             {
-                v.Add(weight);
-            }
-            return new Neuron
-            {
-                X = x,
-                Y = y,
-                Weights = v
-            };
-        }
-
-        public void UpdateWeights(Neuron t, IVector input, double distanceDecay, double learningRate)
-        {
-            if (input.Count != t.Weights.Count)
-                throw new ArgumentException("Wrong input!");
-
-            for (int i = 0; i < t.Weights.Count; i++)
-            {
-                _weights[t.X + t.Y * _width, i] += distanceDecay * learningRate * (input[i] - _weights[t.X + t.Y * _width, i]);
+                _weights[x + y * _width, i] += distanceDecay * learningRate * (input[i] - _weights[x + y * _width, i]);
             }
         }
 
@@ -112,9 +92,9 @@ namespace SelfOrganizingMap
             return weightNrs.Select(x => GetNeuron(x)).ToArray();
         }
 
-        public double Distance(INeuron t, INeuron neuron)
+        public double Distance(int x, int y, int x1, int y1)
         {
-            return Math.Pow(t.X - neuron.X, 2) + Math.Pow(t.Y - neuron.Y, 2);
+            return Math.Pow(x - x1, 2) + Math.Pow(y - y1, 2);
         }
     }
 }
