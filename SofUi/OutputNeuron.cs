@@ -28,7 +28,7 @@ namespace SofUi
         }
 
         public List<Neuron> BestMatchingNeurons { get; set; } = new List<Neuron>();
-        public List<Vector> BestMatchingVector { get; set; } = new List<Vector>();
+        public List<double[]> BestMatchingVector { get; set; } = new List<double[]>();
         public List<RawDocument> BestMatchingDocs { get; set; } = new List<RawDocument>();
 
         internal void UpdateColors(IEnumerable<string> keys)

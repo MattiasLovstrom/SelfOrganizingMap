@@ -65,9 +65,11 @@ namespace ResourceModel
 
         public IEnumerable<RawDocument> Documents => _data;
 
+        public double[,] _inputData;
         public double[,] GetInputVectors()
         {
-            var inputData = new double[_data.Count, _lists.Count];
+            if (_inputData != null) return _inputData;
+            _inputData = new double[_data.Count, _lists.Count];
             for (var row = 0; row < _data.Count; row++)
             {
                 for (var column = 0; column < Keys.Count; column++)
@@ -75,58 +77,57 @@ namespace ResourceModel
                     if (_data[row].TryGetValue(Keys[column], out var value))
                     {
                         var list = _lists[Keys[column]];
-                        inputData[row, column] =
-                            1.0 * (list.IndexOf((string) value) + 1.0) / (list.Count + 1);
+                        _inputData[row, column] =
+                            1.0 * (list.IndexOf((string)value) + 1.0) / (list.Count + 1);
                     }
+                }
+            }
+
+            return _inputData;
+        }
+
+
+        public double[] ToNormalizedData(RawDocument data)
+        {
+            var inputData = new double[Keys.Count];
+
+            for (var column = 0; column < Keys.Count; column++)
+            {
+                if (data.TryGetValue(Keys[column], out var value))
+                {
+                    var list = _lists[Keys[column]];
+                    inputData[column] =
+                        1.0 * (list.IndexOf((string)value) + 1.0) / (list.Count + 1);
                 }
             }
 
             return inputData;
         }
 
+        public IEnumerable<string> GetList(string key)
+        {
+            return _lists[key];
+        }
 
-        public Vector ToNormalizedData(RawDocument data)
+        public void SetList(string key, IEnumerable<string> list)
+        {
+            _lists[key] = new List<string>(list);
+        }
+
+        public void Save(string resultFolder)
+        {
+            if (!Directory.Exists(resultFolder))
             {
-                var input = new Vector();
-                foreach (var key in _lists.Keys)
-                {
-                    if (data.TryGetValue(key, out var value))
-                    {
-                        input.Add(1.0 * (_lists[key].IndexOf((string)value) + 1.0) / (_lists[key].Count + 1));
-                    }
-                    else
-                    {
-                        input.Add(0);
-                    }
-                }
-
-                return input;
+                Directory.CreateDirectory(resultFolder);
             }
+            File.Copy(_dataFilePath, $"{resultFolder}\\data.json");
+            File.WriteAllText($"{resultFolder}\\keys.json", JsonConvert.SerializeObject(Keys, Formatting.Indented));
 
-            public IEnumerable<string> GetList(string key)
+            foreach (var key in Keys)
             {
-                return _lists[key];
-            }
-
-            public void SetList(string key, IEnumerable<string> list)
-            {
-                _lists[key] = new List<string>(list);
-            }
-
-            public void Save(string resultFolder)
-            {
-                if (!Directory.Exists(resultFolder))
-                {
-                    Directory.CreateDirectory(resultFolder);
-                }
-                File.Copy(_dataFilePath, $"{resultFolder}\\data.json");
-                File.WriteAllText($"{resultFolder}\\keys.json", JsonConvert.SerializeObject(Keys, Formatting.Indented));
-
-                foreach (var key in Keys)
-                {
-                    var fileName = $"{resultFolder}\\{key}.json";
-                    File.WriteAllText(fileName, JsonConvert.SerializeObject(_lists[key], Formatting.Indented));
-                }
+                var fileName = $"{resultFolder}\\{key}.json";
+                File.WriteAllText(fileName, JsonConvert.SerializeObject(_lists[key], Formatting.Indented));
             }
         }
     }
+}

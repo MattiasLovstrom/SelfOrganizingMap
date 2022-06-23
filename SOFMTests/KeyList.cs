@@ -8,17 +8,6 @@ namespace SOFM.Tests
     {
         private List<string> _values = new List<string>();
 
-        public void Add(IEnumerable<string> values)
-        {
-            if (values == null) return;
-
-            foreach (var value in values)
-            {
-                if (_values.Contains(value)) continue;
-                _values.Add(value);
-            }
-        }
-
         public double Input(string value)
         {
             return (_values.IndexOf(value) + 1.0) / (_values.Count + 1.0);

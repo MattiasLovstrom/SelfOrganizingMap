@@ -7,6 +7,5 @@ namespace SelfOrganizingMap
     {
         public int X { get; set; }
         public int Y { get; set; }
-        //public Vector Weights { get; set; }
     }
 }
