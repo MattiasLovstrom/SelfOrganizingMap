@@ -6,9 +6,9 @@ using SelfOrganizingMap;
 
 namespace ResourceModel
 {
-    public class Vector : List<double>, IVector
+    public class Vector : List<double>
     {
-        public double EuclidianDistance(IVector vector)
+        public double EuclidianDistance(Vector vector)
         {
             if (vector.Count != Count)
                 throw new ArgumentException("Not the same size");
@@ -18,7 +18,7 @@ namespace ResourceModel
             return euclidianDistance;
         }
 
-        public IEnumerable<double> Distances(IVector vector)
+        public IEnumerable<double> Distances(Vector vector)
         {
             foreach (var x in this)
             {

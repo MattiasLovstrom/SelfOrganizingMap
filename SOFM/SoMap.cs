@@ -80,7 +80,7 @@ namespace SelfOrganizingMap
             return iteration;
         }
 
-        public (int xStart, int xEnd, int yStart, int yEnd) GetRadiusIndexes(INeuron bmu, double currentRadius)
+        public (int xStart, int xEnd, int yStart, int yEnd) GetRadiusIndexes(Neuron bmu, double currentRadius)
         {
             var xStart = (int)(bmu.X - currentRadius - 1);
             xStart = xStart < 0 ? 0 : xStart;
@@ -108,7 +108,7 @@ namespace SelfOrganizingMap
         }
 
 
-        public void Display(params (string id, INeuron neuron)[] selected)
+        public void Display(params (string id, Neuron neuron)[] selected)
         {
             var str = new StringBuilder();
             for (var i = 0; i < Width; i++)

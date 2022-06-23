@@ -47,16 +47,10 @@ namespace SelfOrganizingMap
 
         public Neuron GetNeuron(int weightNr)
         {
-            var v = new Vector();
-            for (var i = 0; i < _inputDimension; i++)
-            {
-                v.Add(_weights[weightNr, i]);
-            }
             return new Neuron
             {
                 X = weightNr % _width,
                 Y = weightNr / _width,
-                Weights = v
             };
         }
 
@@ -78,7 +72,7 @@ namespace SelfOrganizingMap
 
        
 
-        public INeuron[] CalculateBestMatchingNeuron(double[,] inputData)
+        public Neuron[] CalculateBestMatchingNeuron(double[,] inputData)
         {
             var weightNrs = NnMath.CalculateBestMatchingNeuronGpu(inputData, _weights);
             return weightNrs.Select(x => GetNeuron(x)).ToArray();

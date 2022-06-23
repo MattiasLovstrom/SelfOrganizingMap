@@ -3,10 +3,10 @@ using ResourceModel;
 
 namespace SelfOrganizingMap
 {
-    public class Neuron : INeuron
+    public class Neuron 
     {
         public int X { get; set; }
         public int Y { get; set; }
-        public Vector Weights { get; set; }
+        //public Vector Weights { get; set; }
     }
 }
