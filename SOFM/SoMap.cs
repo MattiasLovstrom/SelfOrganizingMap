@@ -65,11 +65,11 @@ namespace SelfOrganizingMap
                     for (var y = yStart; y < yEnd; y++)
                     {
                         var processingNeuron = GetNeuron(x, y);
-                        var distance = bmu.Distance(processingNeuron);
+                        var distance = Nn.Distance(bmu,processingNeuron);
                         if (distance <= Math.Pow(currentRadius, 2.0))
                         {
                             var distanceDrop = GetDistanceDrop(distance, currentRadius);
-                            processingNeuron.UpdateWeights(currentInput, learningRate, distanceDrop);
+                            Nn.UpdateWeights(processingNeuron, currentInput, learningRate, distanceDrop);
                         }
                     }
                 }
@@ -97,7 +97,7 @@ namespace SelfOrganizingMap
             return (xStart, xEnd, yStart, yEnd);
         }
 
-        public INeuron GetNeuron(int indexX, int indexY)
+        public Neuron GetNeuron(int indexX, int indexY)
         {
             if (indexX > Width || indexY > Height)
                 throw new ArgumentException("Wrong index!");

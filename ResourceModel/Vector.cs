@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using SelfOrganizingMap;
 
@@ -19,7 +20,12 @@ namespace ResourceModel
 
         public IEnumerable<double> Distances(IVector vector)
         {
-            return this.Select(x => Math.Pow(x - vector[IndexOf(x)], 2));
+            foreach (var x in this)
+            {
+                //Trace.TraceInformation($"Math.Pow({x} - {vector[IndexOf(x)]}, 2)");
+
+                yield return Math.Pow(x - vector[IndexOf(x)], 2);
+            }
         }
 
         public override string ToString()

@@ -11,17 +11,17 @@ namespace SofUi
 {
     public partial class Form1 : Form
     {
-        //private const string DataFolder = "c:\\temp\\Sof1000";
-        private const string DataFolder = "c:\\temp\\Sof10";
+        private const string DataFolder = "c:\\temp\\Sof1000";
+        //private const string DataFolder = "c:\\temp\\Sof10";
         //private const string DataFolder = "c:\\temp\\somap10_country";
         //private const string DataFolder = "c:\\temp\\SofUnsorted10";
         //private const string DataFolder = "c:\\temp\\SofAll";
         //private const string DataFolder = "c:\\temp\\somapProdAll";
 
-        private readonly int _widthCount = 10;
-        private readonly int _heightCount = 10;
+        private readonly int _widthCount = 70;
+        private readonly int _heightCount = 70;
 
-        private int _numberOfIterations = 1000;
+        private int _numberOfIterations = 10;
         private double _learningRate = 0.01;
         private int stepCounter = 10;
         private int showNeuronsCounter = 100;
