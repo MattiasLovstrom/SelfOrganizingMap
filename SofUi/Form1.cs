@@ -73,7 +73,7 @@ namespace SofUi
                 learningRate: _learningRate);
 
             var cnt = 0;
-            var vectors = collector.Documents.Select(doc => collector.ToNormalizedData(doc)).ToArray();
+            var vectors = collector.GetInputVectors();
 
             var writer = new SoMapTrainer(map, vectors);
             while (writer.Train())
@@ -146,8 +146,7 @@ namespace SofUi
                 }
             }
 
-            var bmus = map.Nn.CalculateBestMatchingNeuron(collector.Documents.Select(x =>
-                collector.ToNormalizedData(x)).ToArray());
+            var bmus = map.Nn.CalculateBestMatchingNeuron(collector.GetInputVectors());
             var cnt = 0;
             foreach (var doc in collector.Documents)
             {

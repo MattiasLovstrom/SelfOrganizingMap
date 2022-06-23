@@ -9,6 +9,7 @@
   <ItemGroup>
     <Compile Remove="IntegrationTests.cs" />
     <Compile Remove="MapResult.cs" />
+    <Compile Remove="NetworkTests.cs" />
     <Compile Remove="SoMapTests.cs" />
   </ItemGroup>
 

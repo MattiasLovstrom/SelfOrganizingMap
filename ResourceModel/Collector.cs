@@ -65,49 +65,68 @@ namespace ResourceModel
 
         public IEnumerable<RawDocument> Documents => _data;
 
+        public double[,] GetInputVectors()
+        {
+            var inputData = new double[_data.Count, _lists.Count];
+            for (var row = 0; row < _data.Count; row++)
+            {
+                for (var column = 0; column < Keys.Count; column++)
+                {
+                    if (_data[row].TryGetValue(Keys[column], out var value))
+                    {
+                        var list = _lists[Keys[column]];
+                        inputData[row, column] =
+                            1.0 * (list.IndexOf((string) value) + 1.0) / (list.Count + 1);
+                    }
+                }
+            }
+
+            return inputData;
+        }
+
 
         public Vector ToNormalizedData(RawDocument data)
-        {
-            var input = new Vector();
-            foreach (var key in _lists.Keys)
             {
-                if (data.TryGetValue(key, out var value))
+                var input = new Vector();
+                foreach (var key in _lists.Keys)
                 {
-                    input.Add(1.0 * (_lists[key].IndexOf((string)value) + 1.0) / (_lists[key].Count + 1));
+                    if (data.TryGetValue(key, out var value))
+                    {
+                        input.Add(1.0 * (_lists[key].IndexOf((string)value) + 1.0) / (_lists[key].Count + 1));
+                    }
+                    else
+                    {
+                        input.Add(0);
+                    }
                 }
-                else
-                {
-                    input.Add(0);
-                }
+
+                return input;
             }
 
-            return input;
-        }
-
-        public IEnumerable<string> GetList(string key)
-        {
-            return _lists[key];
-        }
-
-        public void SetList(string key, IEnumerable<string> list)
-        {
-            _lists[key] = new List<string>(list);
-        }
-
-        public void Save(string resultFolder)
-        {
-            if (!Directory.Exists(resultFolder))
+            public IEnumerable<string> GetList(string key)
             {
-                Directory.CreateDirectory(resultFolder);
+                return _lists[key];
             }
-            File.Copy(_dataFilePath, $"{resultFolder}\\data.json");
-            File.WriteAllText($"{resultFolder}\\keys.json", JsonConvert.SerializeObject(Keys, Formatting.Indented));
 
-            foreach (var key in Keys)
+            public void SetList(string key, IEnumerable<string> list)
             {
-                var fileName = $"{resultFolder}\\{key}.json";
-                File.WriteAllText(fileName, JsonConvert.SerializeObject(_lists[key],Formatting.Indented));
+                _lists[key] = new List<string>(list);
+            }
+
+            public void Save(string resultFolder)
+            {
+                if (!Directory.Exists(resultFolder))
+                {
+                    Directory.CreateDirectory(resultFolder);
+                }
+                File.Copy(_dataFilePath, $"{resultFolder}\\data.json");
+                File.WriteAllText($"{resultFolder}\\keys.json", JsonConvert.SerializeObject(Keys, Formatting.Indented));
+
+                foreach (var key in Keys)
+                {
+                    var fileName = $"{resultFolder}\\{key}.json";
+                    File.WriteAllText(fileName, JsonConvert.SerializeObject(_lists[key], Formatting.Indented));
+                }
             }
         }
     }
-}

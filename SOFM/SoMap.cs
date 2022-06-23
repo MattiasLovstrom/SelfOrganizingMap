@@ -37,7 +37,7 @@ namespace SelfOrganizingMap
             TimeConstant = NumberOfIterations / Math.Log(MatrixRadius);
         }
 
-        public void Train(Vector[] input)
+        public void Train(double[,] input)
         {
             var iteration = 0;
             var learningRate = LearningRate;
@@ -48,14 +48,14 @@ namespace SelfOrganizingMap
             }
         }
 
-        public int TrainIteration(Vector[] input, int iteration, ref double learningRate)
+        public int TrainIteration(double[,] input, int iteration, ref double learningRate)
         {
             Iterate?.Invoke(this, EventArgs.Empty);
             var currentRadius = CalculateNeighborhoodRadius(iteration);
 
             var bmus = Nn.CalculateBestMatchingNeuron(input);
             var cnt = 0;
-            foreach (var currentInput in input)
+            for (var inputRow = 0; inputRow <= input.GetUpperBound(0); inputRow++)
             {
                 var bmu = bmus[cnt++]; 
                 var (xStart, xEnd, yStart, yEnd) = GetRadiusIndexes(bmu, currentRadius);
@@ -69,7 +69,7 @@ namespace SelfOrganizingMap
                         if (distance <= Math.Pow(currentRadius, 2.0))
                         {
                             var distanceDrop = GetDistanceDrop(distance, currentRadius);
-                            Nn.UpdateWeights(x,y, currentInput, learningRate, distanceDrop);
+                            Nn.UpdateWeights(x,y, input, inputRow, learningRate, distanceDrop);
                         }
                     }
                 }

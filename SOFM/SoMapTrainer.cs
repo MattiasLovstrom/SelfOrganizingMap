@@ -5,11 +5,11 @@ namespace SelfOrganizingMap
     public class SoMapTrainer
     {
         private readonly SoMap _map;
-        private readonly Vector[] _input;
+        private readonly double[,] _input;
         private int _iteration;
         private double _learningRate;
 
-        public SoMapTrainer(SoMap map, Vector[] input)
+        public SoMapTrainer(SoMap map, double[,] input)
         {
             _map = map;
             _input = input;
