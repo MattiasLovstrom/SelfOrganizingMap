@@ -27,7 +27,7 @@ namespace SofUi
             BestMatchingNeurons.Clear();
         }
 
-        public List<Neuron> BestMatchingNeurons { get; set; } = new List<Neuron>();
+        public List<(int x, int y)> BestMatchingNeurons { get; set; } = new List<(int x, int y)>();
         public List<double[]> BestMatchingVector { get; set; } = new List<double[]>();
         public List<RawDocument> BestMatchingDocs { get; set; } = new List<RawDocument>();
 
@@ -60,7 +60,7 @@ namespace SofUi
                     ForeColor = Color.Azure;
                 }
 
-                System.Diagnostics.Trace.TraceInformation("BMU" + BestMatchingNeurons.Last().X + BestMatchingNeurons.Last().Y);
+                System.Diagnostics.Trace.TraceInformation("BMU" + BestMatchingNeurons.Last().x + BestMatchingNeurons.Last().y);
                 var doc = BestMatchingDocs.First();
                 foreach (var key in keys)
                 {

@@ -54,41 +54,49 @@ namespace SelfOrganizingMap
             var currentRadius = CalculateNeighborhoodRadius(iteration);
 
             var bmus = Nn.CalculateBestMatchingNeuron(input);
-            var cnt = 0;
-            for (var inputRow = 0; inputRow <= input.GetUpperBound(0); inputRow++)
-            {
-                var bmu = bmus[cnt++]; 
-                var (xStart, xEnd, yStart, yEnd) = GetRadiusIndexes(bmu, currentRadius);
-
-                for (var x = xStart; x < xEnd; x++)
-                {
-                    for (var y = yStart; y < yEnd; y++)
-                    {
-                        //var processingNeuron = GetNeuron(x, y);
-                        var distance = Nn.Distance(bmu.X, bmu.Y,x,y);
-                        if (distance <= Math.Pow(currentRadius, 2.0))
-                        {
-                            var distanceDrop = GetDistanceDrop(distance, currentRadius);
-                            Nn.UpdateWeights(x,y, input, inputRow, learningRate, distanceDrop);
-                        }
-                    }
-                }
-            }
+            Train(input, learningRate, bmus, currentRadius);
 
             iteration++;
             learningRate = LearningRate * Math.Exp(-iteration / NumberOfIterations);
             return iteration;
         }
 
-        public (int xStart, int xEnd, int yStart, int yEnd) GetRadiusIndexes(Neuron bmu, double currentRadius)
+        private void Train(
+            double[,] input, 
+            double learningRate, 
+            (int x, int y)[] bmus, 
+            double currentRadius)
         {
-            var xStart = (int)(bmu.X - currentRadius - 1);
+            var cnt = 0;
+            for (var inputRow = 0; inputRow <= input.GetUpperBound(0); inputRow++)
+            {
+                var bmu = bmus[cnt++];
+                var (xStart, xEnd, yStart, yEnd) = GetRadiusIndexes(bmu, currentRadius);
+
+                for (var x = xStart; x < xEnd; x++)
+                {
+                    for (var y = yStart; y < yEnd; y++)
+                    {
+                        var distance = Nn.Distance(bmu.x, bmu.y, x, y);
+                        if (distance <= Math.Pow(currentRadius, 2.0))
+                        {
+                            var distanceDrop = GetDistanceDrop(distance, currentRadius);
+                            Nn.UpdateWeights(x, y, input, inputRow, learningRate, distanceDrop);
+                        }
+                    }
+                }
+            }
+        }
+
+        public (int xStart, int xEnd, int yStart, int yEnd) GetRadiusIndexes((int x, int y) bmu, double currentRadius)
+        {
+            var xStart = (int)(bmu.x - currentRadius - 1);
             xStart = xStart < 0 ? 0 : xStart;
 
             var xEnd = (int)(xStart + currentRadius * 2 + 1);
             if (xEnd > Width) xEnd = Width;
 
-            var yStart = (int)(bmu.Y - currentRadius - 1);
+            var yStart = (int)(bmu.y - currentRadius - 1);
             yStart = yStart < 0 ? 0 : yStart;
 
             var yEnd = (int)(yStart + currentRadius * 2 + 1);
@@ -105,35 +113,6 @@ namespace SelfOrganizingMap
         public double GetDistanceDrop(double distance, double radius)
         {
             return Math.Exp(-(Math.Pow(distance, 2.0) / Math.Pow(radius, 2.0)));
-        }
-
-
-        public void Display(params (string id, Neuron neuron)[] selected)
-        {
-            var str = new StringBuilder();
-            for (var i = 0; i < Width; i++)
-            {
-                for (var j = 0; j < Height; j++)
-                {
-                    var sel = selected.Where(s => s.neuron.X == i && s.neuron.Y == j).ToArray();
-                    if (sel.Length == 1)
-                    {
-                        str.Append(sel.First().id);
-                    }
-                    else if (sel.Length > 1)
-                    {
-                        str.Append("M");
-                    }
-                    else
-                    {
-                        str.Append("-");
-                    }
-                }
-
-                str.AppendLine();
-            }
-
-            Console.Out.WriteLine(str);
         }
 
         public void Save(string folder)

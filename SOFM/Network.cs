@@ -34,32 +34,13 @@ namespace SelfOrganizingMap
             }
         }
 
-        public double[] GetWeights(int x, int y)
-        {
-            var result = new double[_inputDimension];
-            for (int i = 0; i < _inputDimension; i++)
-            {
-                result[i] = _weights[x + y * _width, i];
-            }
-
-            return result;
-        }
-
-        public Neuron GetNeuron(int weightNr)
-        {
-            return new Neuron
-            {
-                X = weightNr % _width,
-                Y = weightNr / _width,
-            };
-        }
-
         public void UpdateWeights(int x, int y, double[,] input, int inputRow, double distanceDecay, double learningRate)
         {
-            for (int i = 0; i < GetWeights(x,y).Length; i++)
+            for (int i = 0; i < _inputDimension; i++)
             {
                 _weights[x + y * _width, i] += distanceDecay * learningRate * (input[inputRow, i] - _weights[x + y * _width, i]);
             }
+
         }
 
         // i1  11 21
@@ -72,10 +53,10 @@ namespace SelfOrganizingMap
 
        
 
-        public Neuron[] CalculateBestMatchingNeuron(double[,] inputData)
+        public (int x, int y)[] CalculateBestMatchingNeuron(double[,] inputData)
         {
             var weightNrs = NnMath.CalculateBestMatchingNeuronGpu(inputData, _weights);
-            return weightNrs.Select(x => GetNeuron(x)).ToArray();
+            return weightNrs.Select(w => (w % _width,w / _width)).ToArray();
         }
 
         public double Distance(int x, int y, int x1, int y1)

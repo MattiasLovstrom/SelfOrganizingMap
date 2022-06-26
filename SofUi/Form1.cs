@@ -21,10 +21,10 @@ namespace SofUi
         private readonly int _widthCount = 70;
         private readonly int _heightCount =70;
 
-        private int _numberOfIterations = 1000;
-        private double _learningRate = 0.01;
-        private int stepCounter = 10;
-        private int showNeuronsCounter = 100;
+        private int _numberOfIterations = 10000;
+        private double _learningRate = 0.001;
+        private int stepCounter = 1;
+        private int showNeuronsCounter = 1000;
 
         private OutputNeuron[][] _outputNeurons;
 
@@ -72,7 +72,7 @@ namespace SofUi
                 numberOfIterations: _numberOfIterations,
                 learningRate: _learningRate);
 
-            var cnt = 0;
+            var cnt = 1;
             var vectors = collector.GetInputVectors();
 
             var writer = new SoMapTrainer(map, vectors);
@@ -151,12 +151,12 @@ namespace SofUi
             foreach (var doc in collector.Documents)
             {
                 var currentNeuron = bmus[cnt++];
-                _outputNeurons[currentNeuron.Y][currentNeuron.X].BestMatchingDocs.Add(doc);
-                _outputNeurons[currentNeuron.Y][currentNeuron.X].BestMatchingNeurons.Add(currentNeuron);
-                _outputNeurons[currentNeuron.Y][currentNeuron.X].BestMatchingVector.Add(collector.ToNormalizedData(doc));
-                _outputNeurons[currentNeuron.Y][currentNeuron.X].UpdateColors(collector.Keys);
+                _outputNeurons[currentNeuron.y][currentNeuron.x].BestMatchingDocs.Add(doc);
+                _outputNeurons[currentNeuron.y][currentNeuron.x].BestMatchingNeurons.Add(currentNeuron);
+                _outputNeurons[currentNeuron.y][currentNeuron.x].BestMatchingVector.Add(collector.ToNormalizedData(doc));
+                _outputNeurons[currentNeuron.y][currentNeuron.x].UpdateColors(collector.Keys);
                 toolTip1.SetToolTip(
-                    _outputNeurons[currentNeuron.Y][currentNeuron.X], _outputNeurons[currentNeuron.Y][currentNeuron.X]
+                    _outputNeurons[currentNeuron.y][currentNeuron.x], _outputNeurons[currentNeuron.y][currentNeuron.x]
                         .ToolTip(collector));
             }
         }
