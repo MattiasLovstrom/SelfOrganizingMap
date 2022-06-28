@@ -1,9 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.IO;
-using System.Linq;
-using System.Text;
-using Newtonsoft.Json;
-using ResourceModel;
 
 namespace SelfOrganizingMap
 {
@@ -67,52 +64,12 @@ namespace SelfOrganizingMap
             (int x, int y)[] bmus, 
             double currentRadius)
         {
-            var cnt = 0;
-            for (var inputRow = 0; inputRow <= input.GetUpperBound(0); inputRow++)
-            {
-                var bmu = bmus[cnt++];
-                var (xStart, xEnd, yStart, yEnd) = GetRadiusIndexes(bmu, currentRadius);
-
-                for (var x = xStart; x < xEnd; x++)
-                {
-                    for (var y = yStart; y < yEnd; y++)
-                    {
-                        var distance = Nn.Distance(bmu.x, bmu.y, x, y);
-                        if (distance <= Math.Pow(currentRadius, 2.0))
-                        {
-                            var distanceDrop = GetDistanceDrop(distance, currentRadius);
-                            Nn.UpdateWeights(x, y, input, inputRow, learningRate, distanceDrop);
-                        }
-                    }
-                }
-            }
-        }
-
-        public (int xStart, int xEnd, int yStart, int yEnd) GetRadiusIndexes((int x, int y) bmu, double currentRadius)
-        {
-            var xStart = (int)(bmu.x - currentRadius - 1);
-            xStart = xStart < 0 ? 0 : xStart;
-
-            var xEnd = (int)(xStart + currentRadius * 2 + 1);
-            if (xEnd > Width) xEnd = Width;
-
-            var yStart = (int)(bmu.y - currentRadius - 1);
-            yStart = yStart < 0 ? 0 : yStart;
-
-            var yEnd = (int)(yStart + currentRadius * 2 + 1);
-            if (yEnd > Height) yEnd = Height;
-
-            return (xStart, xEnd, yStart, yEnd);
+            Nn.Train(input, learningRate, bmus, currentRadius);
         }
 
         public double CalculateNeighborhoodRadius(double iteration)
         {
             return MatrixRadius * Math.Exp(-iteration / TimeConstant);
-        }
-
-        public double GetDistanceDrop(double distance, double radius)
-        {
-            return Math.Exp(-(Math.Pow(distance, 2.0) / Math.Pow(radius, 2.0)));
         }
 
         public void Save(string folder)

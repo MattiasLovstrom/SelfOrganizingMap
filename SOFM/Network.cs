@@ -51,17 +51,20 @@ namespace SelfOrganizingMap
         // 12 : i1 i2
         // 22 : i1 i2
 
-       
+        public void Train(
+             double[,] input,
+             double learningRate,
+             (int x, int y)[] bmus,
+             double currentRadius)
+        {
+            //NnMath.Train(_weights, _width, _height, input, learningRate, bmus, currentRadius);
+            _weights = NnMath.TrainGpu(_weights, _width, _height, input, learningRate, bmus.Select(u => u.y * _width + u.x).ToArray(), currentRadius);
+        }
 
         public (int x, int y)[] CalculateBestMatchingNeuron(double[,] inputData)
         {
             var weightNrs = NnMath.CalculateBestMatchingNeuronGpu(inputData, _weights);
             return weightNrs.Select(w => (w % _width,w / _width)).ToArray();
-        }
-
-        public double Distance(int x, int y, int x1, int y1)
-        {
-            return Math.Pow(x - x1, 2) + Math.Pow(y - y1, 2);
         }
     }
 }

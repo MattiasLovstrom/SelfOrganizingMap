@@ -1,28 +1,29 @@
-﻿using SelfOrganizingMap;
+﻿using ResourceModel;
+using SelfOrganizingMap;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using ResourceModel;
 
 namespace SofUi
 {
     public partial class Form1 : Form
     {
         //private const string DataFolder = "c:\\temp\\Sof1000";
-        //private const string DataFolder = "c:\\temp\\Sof10";
+        private const string DataFolder = "c:\\temp\\Sof10";
         //private const string DataFolder = "c:\\temp\\somap10_country";
         //private const string DataFolder = "c:\\temp\\SofUnsorted10";
         //private const string DataFolder = "c:\\temp\\SofAll";
-        private const string DataFolder = "c:\\temp\\somapProdAll";
+        //private const string DataFolder = @"C:\temp\SofAll\test_city_organization";
+        //private const string DataFolder = "c:\\temp\\somapProdAll";
 
-        private readonly int _widthCount = 70;
-        private readonly int _heightCount =70;
+        private readonly int _widthCount = 10;
+        private readonly int _heightCount =10;
 
-        private int _numberOfIterations = 10000;
-        private double _learningRate = 0.001;
+        private int _numberOfIterations = 1000;
+        private double _learningRate = 0.01;
         private int stepCounter = 1;
         private int showNeuronsCounter = 1000;
 
@@ -61,6 +62,13 @@ namespace SofUi
             stopWatch.Stop();
             toolStripStatusLabel2.Text += "Testing network: " + stopWatch.ElapsedMilliseconds + "ms ";
             Refresh();
+            for (var y = 0; y < _heightCount; y++)
+            {
+                for (var x = 0; x < _widthCount; x++)
+                {
+                    _outputNeurons[y][x].Visible = true;
+                }
+            }
         }
 
         private SoMap TrainMap(Collector collector)

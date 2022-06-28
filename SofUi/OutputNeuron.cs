@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using ResourceModel;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using ResourceModel;
-using SelfOrganizingMap;
 
 namespace SofUi
 {
@@ -12,7 +11,7 @@ namespace SofUi
     {
         public OutputNeuron()
         {
-            Visible = true;
+            Visible = false;
 
             Clear();
         }
