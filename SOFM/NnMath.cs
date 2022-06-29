@@ -7,59 +7,59 @@ namespace SelfOrganizingMap
 {
     public class NnMath
     {
-        private static Accelerator _accelerator;
-        private static Action<Index1D, ArrayView2D<double, Stride2D.DenseX>, ArrayView2D<double, Stride2D.DenseX>, ArrayView<int>> _loadedKernel;
-        private static Action<
-            Index1D,
-            ArrayView2D<double, Stride2D.DenseX>,
-            ArrayView2D<double, Stride2D.DenseX>,
-            ArrayView<int>,
-            ArrayView<double>> _trainKernel;
+        //private static Accelerator _accelerator;
+        //private static Action<Index1D, ArrayView2D<double, Stride2D.DenseX>, ArrayView2D<double, Stride2D.DenseX>, ArrayView<int>> _loadedKernel;
+        //private static Action<
+        //    Index1D,
+        //    ArrayView2D<double, Stride2D.DenseX>,
+        //    ArrayView2D<double, Stride2D.DenseX>,
+        //    ArrayView<int>,
+        //    ArrayView<double>> _trainKernel;
 
         static NnMath()
         {
-            var context = Context.Create(b => b.Math(MathMode.Fast).Default()); // Context.CreateDefault();
-            _accelerator = context.GetPreferredDevice(false).CreateAccelerator(context);
-            _loadedKernel =
-                _accelerator.LoadAutoGroupedStreamKernel<
-                    Index1D,
-                    ArrayView2D<double, Stride2D.DenseX>,
-                    ArrayView2D<double, Stride2D.DenseX>,
-                    ArrayView<int>>(
-                    CalculateBestMatchingNeuron);
-            _trainKernel =
-                _accelerator.LoadAutoGroupedStreamKernel<
-                    Index1D,
-                    ArrayView2D<double, Stride2D.DenseX>,
-                    ArrayView2D<double, Stride2D.DenseX>,
-                    ArrayView<int>,
-                    ArrayView<double>>(
-                    TrainWeights);
+            //var context = Context.Create(b => b.Math(MathMode.Fast).Default()); // Context.CreateDefault();
+            //_accelerator = context.GetPreferredDevice(false).CreateAccelerator(context);
+            //_loadedKernel =
+            //    _accelerator.LoadAutoGroupedStreamKernel<
+            //        Index1D,
+            //        ArrayView2D<double, Stride2D.DenseX>,
+            //        ArrayView2D<double, Stride2D.DenseX>,
+            //        ArrayView<int>>(
+            //        CalculateBestMatchingNeuron);
+            //_trainKernel =
+            //    _accelerator.LoadAutoGroupedStreamKernel<
+            //        Index1D,
+            //        ArrayView2D<double, Stride2D.DenseX>,
+            //        ArrayView2D<double, Stride2D.DenseX>,
+            //        ArrayView<int>,
+            //        ArrayView<double>>(
+            //        TrainWeights);
         }
 
 
-        ~NnMath()
-        {
-            if (_accelerator != null) _accelerator.Dispose();
-        }
+        //~NnMath()
+        //{
+        //    if (_accelerator != null) _accelerator.Dispose();
+        //}
 
 
-        public static int[] CalculateBestMatchingNeuronGpu(double[,] inputs, double[,] weights)
-        {
+        //public static int[] CalculateBestMatchingNeuronGpu(double[,] inputs, double[,] weights)
+        //{
 
-            int inputsRowsCount = inputs.GetUpperBound(0) + 1;
-            int inputColumnsCount = inputs.GetUpperBound(1) + 1;
-            int outputCount = weights.GetUpperBound(0) + 1;
-            using var inputData = _accelerator.Allocate2DDenseX<double>(new Index2D(inputsRowsCount, inputColumnsCount)); ;
-            using var weightData = _accelerator.Allocate2DDenseX<double>(new Index2D(outputCount, inputColumnsCount));
-            using var deviceOutput = _accelerator.Allocate1D<int>(inputsRowsCount);
-            inputData.CopyFromCPU(inputs);
-            weightData.CopyFromCPU(weights);
-            _loadedKernel(inputsRowsCount, inputData.View, weightData.View, deviceOutput.View);
-            _accelerator.Synchronize();
+        //    int inputsRowsCount = inputs.GetUpperBound(0) + 1;
+        //    int inputColumnsCount = inputs.GetUpperBound(1) + 1;
+        //    int outputCount = weights.GetUpperBound(0) + 1;
+        //    using var inputData = _accelerator.Allocate2DDenseX<double>(new Index2D(inputsRowsCount, inputColumnsCount)); ;
+        //    using var weightData = _accelerator.Allocate2DDenseX<double>(new Index2D(outputCount, inputColumnsCount));
+        //    using var deviceOutput = _accelerator.Allocate1D<int>(inputsRowsCount);
+        //    inputData.CopyFromCPU(inputs);
+        //    weightData.CopyFromCPU(weights);
+        //    _loadedKernel(inputsRowsCount, inputData.View, weightData.View, deviceOutput.View);
+        //    _accelerator.Synchronize();
 
-            return deviceOutput.GetAsArray1D();
-        }
+        //    return deviceOutput.GetAsArray1D();
+        //}
 
         private static void CalculateBestMatchingNeuron(
             Index1D index,
@@ -112,39 +112,39 @@ namespace SelfOrganizingMap
             return output;
         }
 
-        public static double[,] TrainGpu(
-            double[,] weights,
-            int width,
-            int height,
-             double[,] inputs,
-             double learningRate,
-             int[] bmus,
-             double currentRadius)
-        {
-            var settings_w_h_lr_cr = new double[]
-            {
-                width, height, learningRate, currentRadius
-            };
+        //public static double[,] TrainGpu(
+        //    double[,] weights,
+        //    int width,
+        //    int height,
+        //     double[,] inputs,
+        //     double learningRate,
+        //     int[] bmus,
+        //     double currentRadius)
+        //{
+        //    var settings_w_h_lr_cr = new double[]
+        //    {
+        //        width, height, learningRate, currentRadius
+        //    };
 
-            int inputsRowsCount = inputs.GetUpperBound(0) + 1;
-            int inputColumnsCount = inputs.GetUpperBound(1) + 1;
+        //    int inputsRowsCount = inputs.GetUpperBound(0) + 1;
+        //    int inputColumnsCount = inputs.GetUpperBound(1) + 1;
 
-            using var inputData = _accelerator.Allocate2DDenseX<double>(new Index2D(inputsRowsCount, inputColumnsCount)); ;
-            using var weightData = _accelerator.Allocate2DDenseX<double>(new Index2D(weights.GetUpperBound(0) + 1, weights.GetUpperBound(1) + 1));
-            using var bmusData = _accelerator.Allocate1D<int>(inputsRowsCount);
-            using var settings_w_h_lr_cr_Data = _accelerator.Allocate1D<double>(4);
+        //    using var inputData = _accelerator.Allocate2DDenseX<double>(new Index2D(inputsRowsCount, inputColumnsCount)); ;
+        //    using var weightData = _accelerator.Allocate2DDenseX<double>(new Index2D(weights.GetUpperBound(0) + 1, weights.GetUpperBound(1) + 1));
+        //    using var bmusData = _accelerator.Allocate1D<int>(inputsRowsCount);
+        //    using var settings_w_h_lr_cr_Data = _accelerator.Allocate1D<double>(4);
 
 
-            inputData.CopyFromCPU(inputs);
-            weightData.CopyFromCPU(weights);
-            bmusData.CopyFromCPU(bmus);
-            settings_w_h_lr_cr_Data.CopyFromCPU(settings_w_h_lr_cr);
+        //    inputData.CopyFromCPU(inputs);
+        //    weightData.CopyFromCPU(weights);
+        //    bmusData.CopyFromCPU(bmus);
+        //    settings_w_h_lr_cr_Data.CopyFromCPU(settings_w_h_lr_cr);
 
-            _trainKernel(inputsRowsCount, inputData.View, weightData.View, bmusData.View, settings_w_h_lr_cr_Data.View);
-            _accelerator.Synchronize();
+        //    _trainKernel(inputsRowsCount, inputData.View, weightData.View, bmusData.View, settings_w_h_lr_cr_Data.View);
+        //    _accelerator.Synchronize();
 
-            return weightData.GetAsArray2D();
-        }
+        //    return weightData.GetAsArray2D();
+        //}
 
         private static void TrainWeights(
             Index1D index,

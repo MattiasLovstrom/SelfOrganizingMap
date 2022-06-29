@@ -6,7 +6,6 @@ namespace SelfOrganizingMap
 {
     public class SoMap
     {
-        public Network Nn;
         public int Height;
         public int Width;
         public double MatrixRadius;
@@ -25,7 +24,7 @@ namespace SelfOrganizingMap
         {
             Width = width;
             Height = height;
-            Nn = new Network(inputDimension, width, height);
+            //Nn = new Network(inputDimension, width, height);
             NumberOfIterations = numberOfIterations;
             LearningRate = learningRate;
 
@@ -50,21 +49,12 @@ namespace SelfOrganizingMap
             Iterate?.Invoke(this, EventArgs.Empty);
             var currentRadius = CalculateNeighborhoodRadius(iteration);
 
-            var bmus = Nn.CalculateBestMatchingNeuron(input);
-            Train(input, learningRate, bmus, currentRadius);
+            GPU.CalculateBestMatchingNeuronGpu();
+            GPU.TrainGpu(learningRate, currentRadius);
 
             iteration++;
             learningRate = LearningRate * Math.Exp(-iteration / NumberOfIterations);
             return iteration;
-        }
-
-        private void Train(
-            double[,] input, 
-            double learningRate, 
-            (int x, int y)[] bmus, 
-            double currentRadius)
-        {
-            Nn.Train(input, learningRate, bmus, currentRadius);
         }
 
         public double CalculateNeighborhoodRadius(double iteration)

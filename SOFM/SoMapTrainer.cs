@@ -15,6 +15,8 @@ namespace SelfOrganizingMap
             _input = input;
             _iteration = 0;
             _learningRate = _map.LearningRate;
+            GPU.StoreInputs(input);
+            GPU.StoreNetwork(map.Width, map.Height);
         }
 
         public bool Train()
