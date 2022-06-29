@@ -68,13 +68,14 @@ namespace SelfOrganizingMap
             ArrayView<int> output)
         {
             int inputNr = index;
-            float min = float.MaxValue;
+            var min = double.MaxValue;
             for (int weightNr = 0; weightNr < weights.IntExtent.X; weightNr++)
             {
-                float distance = 0;
+                double distance = 0;
                 for (int input = 0; input < inputs.IntExtent.Y; input++)
                 {
-                    distance += (float)Math.Pow(inputs[new Index2D(inputNr, input)] - weights[new Index2D(weightNr, input)], 2);
+                    var d = inputs[new Index2D(inputNr, input)] - weights[new Index2D(weightNr, input)];
+                    distance += d*d;
                     if (distance >= min) break;
                 }
 
@@ -179,7 +180,7 @@ namespace SelfOrganizingMap
                     var distance = Math.Pow(bmux - x, 2) + Math.Pow(bmuy - y, 2);
                     if (distance <= Math.Pow(currentRadius, 2.0))
                     {
-                        var distanceDrop = Math.Exp(-(Math.Pow(distance, 2.0) / Math.Pow(currentRadius, 2.0)));
+                        var distanceDrop = Math.Exp(-(distance * distance) / (currentRadius * currentRadius));
                         for (int i = 0; i < inputData.IntExtent.Y; i++)
                         {
                             weightData[new Index2D(x + y * width, i)] += 
