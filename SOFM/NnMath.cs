@@ -14,8 +14,7 @@ namespace SelfOrganizingMap
             ArrayView2D<double, Stride2D.DenseX>,
             ArrayView2D<double, Stride2D.DenseX>,
             ArrayView<int>,
-            ArrayView<double>,
-            ArrayView2D<double, Stride2D.DenseX>> _trainKernel;
+            ArrayView<double>> _trainKernel;
 
         static NnMath()
         {
@@ -34,8 +33,7 @@ namespace SelfOrganizingMap
                     ArrayView2D<double, Stride2D.DenseX>,
                     ArrayView2D<double, Stride2D.DenseX>,
                     ArrayView<int>,
-                    ArrayView<double>,
-                    ArrayView2D<double, Stride2D.DenseX>>(
+                    ArrayView<double>>(
                     TrainWeights);
         }
 
@@ -135,15 +133,13 @@ namespace SelfOrganizingMap
             using var bmusData = _accelerator.Allocate1D<int>(inputsRowsCount);
             using var settings_w_h_lr_cr_Data = _accelerator.Allocate1D<double>(4);
 
-            using var newWeightData = _accelerator.Allocate2DDenseX<double>(new Index2D(weights.GetUpperBound(0) + 1, weights.GetUpperBound(1) + 1));
 
             inputData.CopyFromCPU(inputs);
             weightData.CopyFromCPU(weights);
-            newWeightData.CopyFromCPU(weights);
             bmusData.CopyFromCPU(bmus);
             settings_w_h_lr_cr_Data.CopyFromCPU(settings_w_h_lr_cr);
 
-            _trainKernel(inputsRowsCount, inputData.View, weightData.View, bmusData.View, settings_w_h_lr_cr_Data.View, newWeightData);
+            _trainKernel(inputsRowsCount, inputData.View, weightData.View, bmusData.View, settings_w_h_lr_cr_Data.View);
             _accelerator.Synchronize();
 
             return weightData.GetAsArray2D();
@@ -154,8 +150,7 @@ namespace SelfOrganizingMap
             ArrayView2D<double, Stride2D.DenseX> inputData,
             ArrayView2D<double, Stride2D.DenseX> weightData,
             ArrayView<int> bmusData,
-            ArrayView<double> settings_w_h_lr_cr_Data,
-            ArrayView2D<double, Stride2D.DenseX> newWeightData)
+            ArrayView<double> settings_w_h_lr_cr_Data)
         {
             int inputRow = index;
             int width = (int)settings_w_h_lr_cr_Data[new Index1D(0)];

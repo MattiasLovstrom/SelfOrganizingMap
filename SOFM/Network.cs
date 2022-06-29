@@ -34,15 +34,6 @@ namespace SelfOrganizingMap
             }
         }
 
-        public void UpdateWeights(int x, int y, double[,] input, int inputRow, double distanceDecay, double learningRate)
-        {
-            for (int i = 0; i < _inputDimension; i++)
-            {
-                _weights[x + y * _width, i] += distanceDecay * learningRate * (input[inputRow, i] - _weights[x + y * _width, i]);
-            }
-
-        }
-
         // i1  11 21
         // i2  12 22 
         //
